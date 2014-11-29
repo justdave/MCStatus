@@ -11,3 +11,4 @@ This is relatively incomplete still...
 Adding new servers works, removing servers works, editing existing ones is not yet implemented.
 Right now you have to manually refresh (it'll also refresh if you close and reopen the app, and if you rotate the screen).  Eventually I want it to periodically update while the app it open (preference for how frequently perhaps?), and perhaps even check in the background and do notifications if someone connects, etc.
 If you want to help, please do. :-)  Pull requests welcome.
+I also need a real app icon.
