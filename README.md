@@ -8,4 +8,4 @@ The MinecraftServer class is intended to be able to be used standalone if you wa
 Pretty sure this currently only works on version 1.7 and newer servers.
 
 This is relatively incomplete still...
-Adding new servers works, edit and remove servers does not (clear application data to start over).  So far I haven't been able to figure out how to get selection to work on the main list (tap-hold an entry to select it, then the bar changes to show the edit and delete buttons).  If you can help me with that part, please do. :-)
+Adding new servers works, removing servers works, editing existing ones is not yet implemented..  If you want to help, please do. :-)  Pull requests welcome.
