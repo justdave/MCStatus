@@ -15,7 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer> {
+public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer> implements View.OnClickListener {
 	private static final String TAG = ServerListViewAdapter.class
 			.getSimpleName();
 
@@ -40,7 +40,10 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer> {
 			rowView = inflater.inflate(R.layout.server_listitem, parent, false);
 		}
 		if (values.get(position).isSelected()) {
-			rowView.setBackgroundColor(color.darker_gray);
+			Log.i(TAG, "View is selected.");
+			rowView.setBackgroundColor(color.holo_blue_dark);
+		} else {
+			Log.i(TAG, "View is not selected.");
 		}
 		TextView server_name = (TextView) rowView
 				.findViewById(R.id.server_name);
@@ -53,6 +56,8 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer> {
 				.description()));
 		server_description.loadData(values.get(position).description(),
 				"text/html", "utf8");
+		server_description.setTag(String.valueOf(position));
+		server_description.setOnClickListener(this);
 		server_description.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -91,6 +96,9 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer> {
 		TextView server_serverversion = (TextView) rowView
 				.findViewById(R.id.server_serverversion);
 		server_serverversion.setText(values.get(position).serverVersion());
+		rowView.setClickable(true);
+		rowView.setOnClickListener(this);
+		rowView.setTag(String.valueOf(position));
 		return rowView;
 	}
 
@@ -102,5 +110,12 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer> {
     public boolean areAllItemsEnabled() {
         return false;
     }
+
+	@Override
+	public void onClick(View v) {
+		Log.i(TAG, "onClick() got called.");
+		values.get(Integer.valueOf((String) v.getTag())).setSelected(true);
+		notifyDataSetChanged();
+	}
 
 }
