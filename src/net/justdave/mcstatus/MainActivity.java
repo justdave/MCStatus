@@ -1,28 +1,33 @@
 package net.justdave.mcstatus;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ListIterator;
 
+import android.R.drawable;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.EditText;
 import android.widget.ListView;
 
-public class MainActivity extends Activity implements OnItemClickListener {
+public class MainActivity extends Activity {
 	private static final String TAG = MainActivity.class.getSimpleName();
 
 	private ArrayList<MinecraftServer> serverlist = new ArrayList<MinecraftServer>();
-	private ServerListViewAdapter serverlist_adapter;
+	private ServerListViewAdapter adapter;
+	private ListView listView;
 	private ServerDB database;
 
 	@Override
@@ -32,26 +37,105 @@ public class MainActivity extends Activity implements OnItemClickListener {
 		database.open();
 
 		database.getAllServers(serverlist);
-		serverlist_adapter = new ServerListViewAdapter(getApplicationContext(),
-				serverlist);
+		adapter = new ServerListViewAdapter(getApplicationContext(), serverlist);
 		setContentView(R.layout.activity_main);
-		ListView listView = (ListView) findViewById(R.id.server_list);
-		listView.setAdapter(serverlist_adapter);
-		// listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-		listView.setItemsCanFocus(false);
-		listView.setOnItemClickListener(this);
+		listView = (ListView) findViewById(R.id.server_list);
+		listView.setAdapter(adapter);
+		adapter.setListView(listView);
+		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		listView.setItemsCanFocus(false);
 		listView.setDescendantFocusability(ListView.FOCUS_BLOCK_DESCENDANTS);
 		listView.setEmptyView(findViewById(R.id.empty));
 		listView.addStatesFromChildren();
-		refresh();
-	}
+		listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		Log.i(TAG, "onItemClick() called");
-		parent.getItemAtPosition(position);
+			@Override
+			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+				MenuInflater inflater = getMenuInflater();
+				inflater.inflate(R.menu.selectionbar, menu);
+				return true;
+			}
+
+			@Override
+			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+				return true;
+			}
+
+			@Override
+			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+				switch (item.getItemId()) {
+				case R.id.action_editserver:
+					Log.i(TAG, "EDIT selection:");
+					break;
+				case R.id.action_deleteserver:
+					AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
+							MainActivity.this,
+							AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+					myAlertDialog
+							.setCancelable(false)
+							.setTitle("Delete Server(s)")
+							.setMessage(
+									"You are about to delete the selected server(s).")
+							.setPositiveButton("Cancel",
+									new DialogInterface.OnClickListener() {
+
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											// do something when the Cancel
+											// button
+											// is clicked
+											Log.i(TAG, "Cancel picked");
+										}
+									})
+							.setNegativeButton("Delete",
+									new DialogInterface.OnClickListener() {
+
+										public void onClick(
+												DialogInterface arg0, int arg1) {
+											// do something when the Delete
+											// button is clicked
+											Log.i(TAG, "Delete picked");
+											SparseBooleanArray selected = listView
+													.getCheckedItemPositions();
+											Iterator<MinecraftServer> it = serverlist
+													.iterator();
+											while (it.hasNext()) {
+												MinecraftServer thisServer = it
+														.next();
+												if (selected.get(serverlist
+														.indexOf(thisServer))) {
+													database.delete(thisServer
+															.serverAddress());
+													listView.setItemChecked(serverlist.indexOf(thisServer), false);
+												}
+											}
+											database.getAllServers(serverlist);
+											refresh();
+											adapter.notifyDataSetInvalidated();
+										}
+									}).create().show();
+					break;
+				}
+				return false;
+			}
+
+			@Override
+			public void onItemCheckedStateChanged(ActionMode mode,
+					int position, long id, boolean checked) {
+				// listView.setItemChecked(position, checked);
+				mode.getMenu().findItem(R.id.action_editserver)
+						.setVisible(listView.getCheckedItemCount() == 1);
+				mode.setTitle(Integer.valueOf(listView.getCheckedItemCount())
+						+ " selected");
+			}
+
+			@Override
+			public void onDestroyActionMode(ActionMode mode) {
+				listView.clearChoices();
+			}
+		});
+		refresh();
+
 	}
 
 	public void refresh() {
@@ -66,7 +150,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						serverlist_adapter.notifyDataSetChanged();
+						adapter.notifyDataSetChanged();
 					}
 				});
 			}
@@ -83,11 +167,6 @@ public class MainActivity extends Activity implements OnItemClickListener {
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		// just hide the delete button for now, eventually we need to show it
-		// when there's a selection
-		ListView server_list = (ListView) findViewById(R.id.server_list);
-		MenuItem deleteServer = menu.findItem(R.id.action_deleteserver);
-		deleteServer.setVisible(server_list.getCheckedItemCount() > 0);
 		return true;
 	}
 

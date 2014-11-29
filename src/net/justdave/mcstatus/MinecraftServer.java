@@ -33,8 +33,6 @@ public class MinecraftServer extends Object {
 	private int queryPort = 25565; // the default minecraft query port
 	private Socket socket = null;
 	private String serverData;
-	private boolean isSelected = false;
-	private boolean failed = false;
 	private JSONObject serverJSON = new JSONObject();
 
 	public MinecraftServer() { // default to localhost:25565
@@ -52,18 +50,6 @@ public class MinecraftServer extends Object {
 		setDescription("Loading...");
 	}
 
-	public boolean failed() {
-		return failed;
-	}
-	
-	public boolean isSelected() {
-		return isSelected;
-	}
-
-	public void setSelected(boolean selected) {
-		isSelected = selected;
-	}
-	
 	private void setDescription(String msg) {
 		try {
 			serverJSON.put("description", msg);
@@ -135,7 +121,7 @@ public class MinecraftServer extends Object {
 	public String description() {
 		StringBuilder result = new StringBuilder();
 		String desc = serverJSON.optString("description");
-		result.append("<body style='background-color: black; color: white; margin: 0; padding: 0;'><span>");
+		result.append("<body style='background-color: transparent; color: white; margin: 0; padding: 0;'><span>");
 		int curChar = 0;
 		String color = "";
 		String decoration = "";
@@ -268,13 +254,11 @@ public class MinecraftServer extends Object {
 			socket.setSoTimeout(10000); // 10 second read timeout
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
-			failed = true;
 			setDescription("Lookup failed: Unknown host");
 			e.printStackTrace();
 			return;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			failed = true;
 			setDescription(e.toString());
 			e.printStackTrace();
 			return;
@@ -301,7 +285,6 @@ public class MinecraftServer extends Object {
 			int packetLength = readVarInt(in); // size of entire packet
 			if (packetLength < 11) {
 				Log.i(TAG, "packet length too small");
-				failed = true;
 				serverData = null;
 				setDescription("Invalid response from server (packet too small - server may be in the process of restarting, try again in a few seconds)");
 				return;
@@ -329,11 +312,9 @@ public class MinecraftServer extends Object {
 			serverJSON = new JSONObject(serverData);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			failed = true;
 			e.printStackTrace();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			failed = true;
 			e.printStackTrace();
 		}
 	}

@@ -12,11 +12,5 @@
         android:orderInCategory="101"
         android:showAsAction="ifRoom"
         android:title="@string/action_addserver"/>
-    <item
-        android:id="@+id/action_deleteserver"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:orderInCategory="102"
-        android:showAsAction="ifRoom"
-        android:title="@string/action_deleteserver"/>
 
 </menu>

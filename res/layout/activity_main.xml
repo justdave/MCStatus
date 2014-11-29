@@ -15,8 +15,7 @@
         android:descendantFocusability="blocksDescendants"
         android:divider="#aaaaaa"
         android:dividerHeight="1px"
-        android:fillViewport="true"
-        android:listSelector="@android:color/darker_gray" />
+        android:fillViewport="true" />
 
     <LinearLayout
         android:id="@+id/empty"

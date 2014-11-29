@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_editserver"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/action_editserver"/>
+    <item
+        android:id="@+id/action_deleteserver"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/action_deleteserver"/>
+
+</menu>

@@ -5,6 +5,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_addserver">Add Server</string>
     <string name="action_deleteserver">Delete Server(s)</string>
+    <string name="action_editserver">Edit Server</string>
     <string name="icon_description">Server FavIcon</string>
     <string name="edit_server_name">Enter Server Name:</string>
     <string name="empty_left">Please touch the</string>
