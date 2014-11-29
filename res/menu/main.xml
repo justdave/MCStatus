@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="@android:drawable/ic_popup_sync"
+        android:orderInCategory="101"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_refresh"/>
+    <item
+        android:id="@+id/action_addserver"
+        android:icon="@android:drawable/ic_menu_add"
+        android:orderInCategory="101"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_addserver"/>
+    <item
+        android:id="@+id/action_deleteserver"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="102"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_deleteserver"/>
+
+</menu>

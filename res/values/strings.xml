@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MCStatus</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_addserver">Add Server</string>
+    <string name="action_deleteserver">Delete Server(s)</string>
+    <string name="icon_description">Server FavIcon</string>
+    <string name="edit_server_name">Enter Server Name:</string>
+    <string name="empty_left">Please touch the</string>
+    <string name="empty_right">to add a server</string>
+    <string name="edit_server_name_hint">My Minecraft Server</string>
+    <string name="edit_server_address">Enter Server Address:</string>
+    <string name="edit_server_address_hint">serveraddress[:port]</string>
+    <string name="userlist_header">Users online:</string>
+
+</resources>
