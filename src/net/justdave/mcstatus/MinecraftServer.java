@@ -50,7 +50,7 @@ public class MinecraftServer extends Object {
 		setDescription("Loading...");
 	}
 
-	private void setDescription(String msg) {
+	public void setDescription(String msg) {
 		try {
 			serverJSON.put("description", msg);
 		} catch (JSONException e1) {

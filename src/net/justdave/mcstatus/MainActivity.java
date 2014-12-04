@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import android.R.drawable;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -139,6 +138,13 @@ public class MainActivity extends Activity {
 	}
 
 	public void refresh() {
+		ListIterator<MinecraftServer> iterator = serverlist
+				.listIterator();
+		while (iterator.hasNext()) {
+			iterator.next().setDescription("Loading...           ");
+		}
+		adapter.notifyDataSetChanged();
+
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
