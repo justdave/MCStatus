@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -17,8 +18,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
@@ -28,6 +32,9 @@ public class MainActivity extends Activity {
 	private ServerListViewAdapter adapter;
 	private ListView listView;
 	private ServerDB database;
+	private MenuItem refreshItem;
+	private int currentlyRefreshing;
+	private final Object refreshLock = new Object();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +112,10 @@ public class MainActivity extends Activity {
 														.indexOf(thisServer))) {
 													database.delete(thisServer
 															.serverAddress());
-													listView.setItemChecked(serverlist.indexOf(thisServer), false);
+													listView.setItemChecked(
+															serverlist
+																	.indexOf(thisServer),
+															false);
 												}
 											}
 											database.getAllServers(serverlist);
@@ -138,36 +148,62 @@ public class MainActivity extends Activity {
 	}
 
 	public void refresh() {
-		ListIterator<MinecraftServer> iterator = serverlist
-				.listIterator();
+		LayoutInflater inflater = (LayoutInflater) getApplicationContext()
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_animation,
+				null);
+
+		Animation rotation = AnimationUtils.loadAnimation(
+				getApplicationContext(), R.anim.refresh_rotate);
+		rotation.setRepeatCount(Animation.INFINITE);
+		iv.startAnimation(rotation);
+
+		if (refreshItem != null) {
+			refreshItem.setActionView(iv);
+		}
+		ListIterator<MinecraftServer> iterator = serverlist.listIterator();
 		while (iterator.hasNext()) {
 			iterator.next().setDescription("Loading...           ");
 		}
 		adapter.notifyDataSetChanged();
-
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				ListIterator<MinecraftServer> iterator = serverlist
-						.listIterator();
-				while (iterator.hasNext()) {
-					iterator.next().query();
-				}
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						adapter.notifyDataSetChanged();
+		iterator = serverlist.listIterator();
+		while (iterator.hasNext()) {
+			final MinecraftServer mcs = iterator.next();
+			Thread thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					synchronized (refreshLock) {
+						currentlyRefreshing++;
 					}
-				});
-			}
-		});
-		thread.start();
+					mcs.query();
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							adapter.notifyDataSetChanged();
+							synchronized (refreshLock) {
+								currentlyRefreshing--;
+							}
+							if (currentlyRefreshing == 0) {
+								if (refreshItem != null
+										&& refreshItem.getActionView() != null) {
+									refreshItem.getActionView()
+											.clearAnimation();
+									refreshItem.setActionView(null);
+								}
+							}
+						}
+					});
+				}
+			});
+			thread.start();
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		refreshItem = menu.findItem(R.id.action_refresh);
 		return true;
 	}
 
