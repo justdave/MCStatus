@@ -1,15 +1,18 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        signingkey {
+            storeFile file('/home/dave/.android-keystore/playstorekeys')
+        }
+    }
     compileSdkVersion 19
     buildToolsVersion "21.1.2"
-
     defaultConfig {
         applicationId "net.justdave.mcstatus"
         minSdkVersion 19
         targetSdkVersion 21
     }
-
     buildTypes {
         release {
             minifyEnabled false
