@@ -26,251 +26,303 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
-	private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
 
-	private ArrayList<MinecraftServer> serverlist = new ArrayList<MinecraftServer>();
-	private ServerListViewAdapter adapter;
-	private ListView listView;
-	private ServerDB database;
-	private MenuItem refreshItem;
-	private int currentlyRefreshing;
-	private final Object refreshLock = new Object();
+    private ArrayList<MinecraftServer> serverlist = new ArrayList<MinecraftServer>();
+    private ServerListViewAdapter adapter;
+    private ListView listView;
+    private ServerDB database;
+    private MenuItem refreshItem;
+    private int currentlyRefreshing = 0;
+    private final Object refreshLock = new Object();
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		database = new ServerDB(this);
-		database.open();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        database = new ServerDB(this);
+        database.open();
 
-		database.getAllServers(serverlist);
-		adapter = new ServerListViewAdapter(getApplicationContext(), serverlist);
-		setContentView(R.layout.activity_main);
-		listView = (ListView) findViewById(R.id.server_list);
-		listView.setAdapter(adapter);
-		adapter.setListView(listView);
-		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-		listView.setItemsCanFocus(false);
-		listView.setDescendantFocusability(ListView.FOCUS_BLOCK_DESCENDANTS);
-		listView.setEmptyView(findViewById(R.id.empty));
-		listView.addStatesFromChildren();
-		listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
+        database.getAllServers(serverlist);
+        adapter = new ServerListViewAdapter(getApplicationContext(), serverlist);
+        setContentView(R.layout.activity_main);
+        listView = (ListView) findViewById(R.id.server_list);
+        listView.setAdapter(adapter);
+        adapter.setListView(listView);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setItemsCanFocus(false);
+        listView.setDescendantFocusability(ListView.FOCUS_BLOCK_DESCENDANTS);
+        listView.setEmptyView(findViewById(R.id.empty));
+        listView.addStatesFromChildren();
+        listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
 
-			@Override
-			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-				MenuInflater inflater = getMenuInflater();
-				inflater.inflate(R.menu.selectionbar, menu);
-				return true;
-			}
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater inflater = getMenuInflater();
+                inflater.inflate(R.menu.selectionbar, menu);
+                return true;
+            }
 
-			@Override
-			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-				return true;
-			}
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return true;
+            }
 
-			@Override
-			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-				switch (item.getItemId()) {
-				case R.id.action_editserver:
-					Log.i(TAG, "EDIT selection:");
-					break;
-				case R.id.action_deleteserver:
-					AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
-							MainActivity.this,
-							AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-					myAlertDialog
-							.setCancelable(false)
-							.setTitle("Delete Server(s)")
-							.setMessage(
-									"You are about to delete the selected server(s).")
-							.setPositiveButton("Cancel",
-									new DialogInterface.OnClickListener() {
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_editserver:
+                        Log.i(TAG, "EDIT selection:");
+                        View promptsView = LayoutInflater.from(MainActivity.this).inflate(
+                                R.layout.addserver_dialog, null);
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                                MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                        alertDialogBuilder.setView(promptsView);
 
-										public void onClick(
-												DialogInterface arg0, int arg1) {
-											// do something when the Cancel
-											// button
-											// is clicked
-											Log.i(TAG, "Cancel picked");
-										}
-									})
-							.setNegativeButton("Delete",
-									new DialogInterface.OnClickListener() {
+                        final EditText serverName = (EditText) promptsView
+                                .findViewById(R.id.edit_server_name);
+                        final EditText serverAddress = (EditText) promptsView
+                                .findViewById(R.id.edit_server_address);
+                        SparseBooleanArray selected = listView
+                                .getCheckedItemPositions();
+                        Iterator<MinecraftServer> it = serverlist
+                                .iterator();
+                        while (it.hasNext()) {
+                            final MinecraftServer thisServer = it
+                                    .next();
+                            if (selected.get(serverlist
+                                    .indexOf(thisServer))) {
+                                serverName.setText(thisServer.serverName());
+                                serverAddress.setText(thisServer.serverAddress());
+                                alertDialogBuilder
+                                        .setCancelable(false)
+                                        .setTitle("Edit Server: ".concat(thisServer.serverName()))
+                                        .setPositiveButton("OK",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog,
+                                                                        int id) {
+                                                        // get user input
+                                                        database.update(thisServer.serverAddress(),
+                                                                serverAddress.getText().toString(),
+                                                                serverName.getText().toString());
+                                                        database.getAllServers(serverlist);
+                                                        refresh();
+                                                    }
+                                                })
+                                        .setNegativeButton("Cancel",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog,
+                                                                        int id) {
+                                                        dialog.cancel();
+                                                    }
+                                                });
+                                AlertDialog alertDialog = alertDialogBuilder.create();
+                                alertDialog.show();
+                                listView.setItemChecked(
+                                        serverlist
+                                                .indexOf(thisServer),
+                                        false);
+                            }
+                        }
 
-										public void onClick(
-												DialogInterface arg0, int arg1) {
-											// do something when the Delete
-											// button is clicked
-											Log.i(TAG, "Delete picked");
-											SparseBooleanArray selected = listView
-													.getCheckedItemPositions();
-											Iterator<MinecraftServer> it = serverlist
-													.iterator();
-											while (it.hasNext()) {
-												MinecraftServer thisServer = it
-														.next();
-												if (selected.get(serverlist
-														.indexOf(thisServer))) {
-													database.delete(thisServer
-															.serverAddress());
-													listView.setItemChecked(
-															serverlist
-																	.indexOf(thisServer),
-															false);
-												}
-											}
-											database.getAllServers(serverlist);
-											refresh();
-											adapter.notifyDataSetInvalidated();
-										}
-									}).create().show();
-					break;
-				}
-				return false;
-			}
+                        break;
+                    case R.id.action_deleteserver:
+                        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
+                                MainActivity.this,
+                                AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                        myAlertDialog
+                                .setCancelable(false)
+                                .setTitle("Delete Server(s)")
+                                .setMessage(
+                                        "You are about to delete the selected server(s).")
+                                .setPositiveButton("Cancel",
+                                        new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onItemCheckedStateChanged(ActionMode mode,
-					int position, long id, boolean checked) {
-				// listView.setItemChecked(position, checked);
-				mode.getMenu().findItem(R.id.action_editserver)
-						.setVisible(listView.getCheckedItemCount() == 1);
-				mode.setTitle(Integer.valueOf(listView.getCheckedItemCount())
-						+ " selected");
-			}
+                                            public void onClick(
+                                                    DialogInterface arg0, int arg1) {
+                                                // do something when the Cancel
+                                                // button
+                                                // is clicked
+                                                Log.i(TAG, "Cancel picked");
+                                            }
+                                        })
+                                .setNegativeButton("Delete",
+                                        new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onDestroyActionMode(ActionMode mode) {
-				listView.clearChoices();
-			}
-		});
-		refresh();
+                                            public void onClick(
+                                                    DialogInterface arg0, int arg1) {
+                                                // do something when the Delete
+                                                // button is clicked
+                                                Log.i(TAG, "Delete picked");
+                                                SparseBooleanArray selected = listView
+                                                        .getCheckedItemPositions();
+                                                Iterator<MinecraftServer> it = serverlist
+                                                        .iterator();
+                                                while (it.hasNext()) {
+                                                    MinecraftServer thisServer = it
+                                                            .next();
+                                                    if (selected.get(serverlist
+                                                            .indexOf(thisServer))) {
+                                                        database.delete(thisServer
+                                                                .serverAddress());
+                                                        listView.setItemChecked(
+                                                                serverlist
+                                                                        .indexOf(thisServer),
+                                                                false);
+                                                    }
+                                                }
+                                                database.getAllServers(serverlist);
+                                                refresh();
+                                                adapter.notifyDataSetInvalidated();
+                                            }
+                                        }).create().show();
+                        break;
+                }
+                return false;
+            }
 
-	}
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode,
+                                                  int position, long id, boolean checked) {
+                // listView.setItemChecked(position, checked);
+                mode.getMenu().findItem(R.id.action_editserver)
+                        .setVisible(listView.getCheckedItemCount() == 1);
+                mode.setTitle(Integer.valueOf(listView.getCheckedItemCount())
+                        + " selected");
+            }
 
-	public void refresh() {
-		LayoutInflater inflater = (LayoutInflater) getApplicationContext()
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_animation,
-				null);
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                listView.clearChoices();
+            }
+        });
 
-		Animation rotation = AnimationUtils.loadAnimation(
-				getApplicationContext(), R.anim.refresh_rotate);
-		rotation.setRepeatCount(Animation.INFINITE);
-		iv.startAnimation(rotation);
+    }
 
-		if (refreshItem != null) {
-			refreshItem.setActionView(iv);
-		}
-		ListIterator<MinecraftServer> iterator = serverlist.listIterator();
-		while (iterator.hasNext()) {
-			iterator.next().setDescription("Loading...           ");
-		}
-		adapter.notifyDataSetChanged();
-		iterator = serverlist.listIterator();
-		while (iterator.hasNext()) {
-			final MinecraftServer mcs = iterator.next();
-			Thread thread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					synchronized (refreshLock) {
-						currentlyRefreshing++;
-					}
-					mcs.query();
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							adapter.notifyDataSetChanged();
-							synchronized (refreshLock) {
-								currentlyRefreshing--;
-							}
-							if (currentlyRefreshing == 0) {
-								if (refreshItem != null
-										&& refreshItem.getActionView() != null) {
-									refreshItem.getActionView()
-											.clearAnimation();
-									refreshItem.setActionView(null);
-								}
-							}
-						}
-					});
-				}
-			});
-			thread.start();
-		}
-	}
+    public void refresh() {
+        LayoutInflater inflater = (LayoutInflater) getApplicationContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_animation,
+                null);
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		refreshItem = menu.findItem(R.id.action_refresh);
-		return true;
-	}
+        Animation rotation = AnimationUtils.loadAnimation(
+                getApplicationContext(), R.anim.refresh_rotate);
+        rotation.setRepeatCount(Animation.INFINITE);
+        iv.startAnimation(rotation);
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		return true;
-	}
+        if (refreshItem != null) {
+            refreshItem.setActionView(iv);
+        }
+        ListIterator<MinecraftServer> iterator = serverlist.listIterator();
+        while (iterator.hasNext()) {
+            iterator.next().setDescription("Loading...           ");
+        }
+        adapter.notifyDataSetChanged();
+        iterator = serverlist.listIterator();
+        while (iterator.hasNext()) {
+            final MinecraftServer mcs = iterator.next();
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (refreshLock) {
+                        currentlyRefreshing++;
+                    }
+                    mcs.query();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                            synchronized (refreshLock) {
+                                currentlyRefreshing--;
+                            }
+                            if (currentlyRefreshing == 0) {
+                                if (refreshItem != null
+                                        && refreshItem.getActionView() != null) {
+                                    refreshItem.getActionView()
+                                            .clearAnimation();
+                                    refreshItem.setActionView(null);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+            thread.start();
+        }
+    }
 
-	@SuppressLint("InflateParams")
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuitem) {
-		switch (menuitem.getItemId()) {
-		case R.id.action_addserver:
-			View promptsView = LayoutInflater.from(this).inflate(
-					R.layout.addserver_dialog, null);
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-			alertDialogBuilder.setView(promptsView);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        refreshItem = menu.findItem(R.id.action_refresh);
+        refresh();
+        return true;
+    }
 
-			final EditText serverName = (EditText) promptsView
-					.findViewById(R.id.edit_server_name);
-			final EditText serverAddress = (EditText) promptsView
-					.findViewById(R.id.edit_server_address);
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return true;
+    }
 
-			alertDialogBuilder
-					.setCancelable(false)
-					.setTitle("Add a Server")
-					.setPositiveButton("OK",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									// get user input
-									database.create(serverName.getText()
-											.toString(), serverAddress
-											.getText().toString());
-									database.getAllServers(serverlist);
-									refresh();
-								}
-							})
-					.setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-			AlertDialog alertDialog = alertDialogBuilder.create();
-			alertDialog.show();
-			return true;
-		case R.id.action_refresh:
-			refresh();
-			return true;
-		}
-		return false;
-	}
+    @SuppressLint("InflateParams")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuitem) {
+        switch (menuitem.getItemId()) {
+            case R.id.action_addserver:
+                View promptsView = LayoutInflater.from(this).inflate(
+                        R.layout.addserver_dialog, null);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                alertDialogBuilder.setView(promptsView);
 
-	@Override
-	protected void onResume() {
-		Log.i(TAG, "onResume() called");
-		database.open();
-		super.onResume();
-	}
+                final EditText serverName = (EditText) promptsView
+                        .findViewById(R.id.edit_server_name);
+                final EditText serverAddress = (EditText) promptsView
+                        .findViewById(R.id.edit_server_address);
 
-	@Override
-	protected void onPause() {
-		Log.i(TAG, "onPause() called");
-		database.close();
-		super.onPause();
-	}
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setTitle("Add a Server")
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int id) {
+                                        // get user input
+                                        database.create(serverName.getText()
+                                                .toString(), serverAddress
+                                                .getText().toString());
+                                        database.getAllServers(serverlist);
+                                        refresh();
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+                return true;
+            case R.id.action_refresh:
+                refresh();
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onResume() {
+        Log.i(TAG, "onResume() called");
+        database.open();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.i(TAG, "onPause() called");
+        database.close();
+        super.onPause();
+    }
 }

@@ -39,6 +39,13 @@ public class ServerDB {
 				new String[] { serverAddress });
 	}
 
+    public void update(String oldServerAddress, String newServerAddress, String newServerName) {
+        ContentValues args = new ContentValues();
+        args.put("serveraddress", newServerAddress);
+        args.put("servername", newServerName);
+        database.update("serverlist", args, "serveraddress = ?", new String[]{oldServerAddress});
+    }
+
 	public void getAllServers(ArrayList<MinecraftServer> serverlist) {
 		Log.i(TAG, "getAllServers() called");
 		serverlist.clear();
@@ -63,6 +70,5 @@ public class ServerDB {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		return;
 	}
 }
