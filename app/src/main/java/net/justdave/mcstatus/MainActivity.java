@@ -268,6 +268,11 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem menuitem) {
         switch (menuitem.getItemId()) {
+            case R.id.action_about:
+                AboutDialog about = new AboutDialog(this);
+                about.setTitle(getResources().getIdentifier("action_about", "string", getPackageName()));
+                about.show();
+                break;
             case R.id.action_addserver:
                 View promptsView = LayoutInflater.from(this).inflate(
                         R.layout.addserver_dialog, null);
