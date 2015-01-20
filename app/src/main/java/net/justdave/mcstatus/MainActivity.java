@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
                 switch (item.getItemId()) {
                     case R.id.action_editserver:
                         Log.i(TAG, "EDIT selection:");
-                        View promptsView = LayoutInflater.from(MainActivity.this).inflate(
+                        @SuppressLint("InflateParams") View promptsView = LayoutInflater.from(MainActivity.this).inflate(
                                 R.layout.addserver_dialog, null);
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                                 MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
