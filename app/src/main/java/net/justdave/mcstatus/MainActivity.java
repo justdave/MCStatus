@@ -207,12 +207,14 @@ public class MainActivity extends Activity {
         Animation rotation = AnimationUtils.loadAnimation(
                 getApplicationContext(), R.anim.refresh_rotate);
         rotation.setRepeatCount(Animation.INFINITE);
-        iv.startAnimation(rotation);
 
-        if (refreshItem != null) {
-            refreshItem.setActionView(iv);
-        }
         ListIterator<MinecraftServer> iterator = serverlist.listIterator();
+        if (iterator.hasNext()) {
+            if (refreshItem != null) {
+                refreshItem.setActionView(iv);
+            }
+            iv.startAnimation(rotation);
+        }
         while (iterator.hasNext()) {
             iterator.next().setDescription("Loading...           ");
         }
