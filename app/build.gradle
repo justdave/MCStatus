@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+import com.android.builder.core.DefaultManifestParser
 
 android {
     signingConfigs {
@@ -11,12 +12,22 @@ android {
     defaultConfig {
         applicationId "net.justdave.mcstatus"
         minSdkVersion 19
-        targetSdkVersion 21
+        targetSdkVersion 19
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig getSigningConfig()
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def file = output.outputFile
+                    def manifestParser = new DefaultManifestParser()
+                    def String versionName = manifestParser.getVersionName((File) android.sourceSets.main.manifest.srcFile)
+                    def fileName = project.getRootProject().name + "-" + versionName + ".apk"
+                    output.outputFile = new File(file.parent, fileName)
+                }
+            }
         }
     }
 }
