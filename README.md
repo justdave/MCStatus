@@ -8,6 +8,7 @@ The MinecraftServer class is intended to be able to be used standalone if you wa
 Pretty sure this currently only works on version 1.7 and newer servers.
 
 Features:
+
 * Add, remove, and edit servers in the list to check
 * Will list the server's MOTD (message of the day), how many users are connected, and (if supplied by the server) the list of connected users.
 
