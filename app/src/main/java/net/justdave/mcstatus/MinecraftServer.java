@@ -121,6 +121,9 @@ public class MinecraftServer extends Object {
 	public String description() {
 		StringBuilder result = new StringBuilder();
 		String desc = serverJSON.optString("description");
+		if (serverJSON.optJSONObject("description") != null) {
+            desc = serverJSON.optJSONObject("description").optString("text");
+        }
 		result.append("<body style='background-color: transparent; color: white; margin: 0; padding: 0;'><span>");
 		int curChar = 0;
 		String color = "";
