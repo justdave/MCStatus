@@ -122,7 +122,9 @@ public class MinecraftServer extends Object {
 		StringBuilder result = new StringBuilder();
 		String desc = serverJSON.optString("description");
 		if (serverJSON.optJSONObject("description") != null) {
-            desc = serverJSON.optJSONObject("description").optString("text");
+			if (serverJSON.optJSONObject("description").optString("text") != null) {
+				desc = serverJSON.optJSONObject("description").optString("text");
+			}
         }
 		result.append("<body style='background-color: transparent; color: white; margin: 0; padding: 0;'><span>");
 		int curChar = 0;
