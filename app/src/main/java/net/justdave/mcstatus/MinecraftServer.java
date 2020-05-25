@@ -24,7 +24,7 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
-public class MinecraftServer extends Object {
+public class MinecraftServer {
 	private static final String TAG = MinecraftServer.class.getSimpleName();
 	private static final int THUMBNAIL_SIZE = 64;
 
@@ -41,7 +41,7 @@ public class MinecraftServer extends Object {
 
 	public MinecraftServer(String name, String address) throws URISyntaxException {
         serverName = name;
-		Log.i(TAG, "new MincraftServer(".concat(address).concat(")"));
+		Log.i(TAG, "new MinecraftServer(".concat(address).concat(")"));
 		URI uri = new URI("my://" + address);
 		serverAddress = uri.getHost();
 		if (uri.getPort() > 0) {
@@ -78,7 +78,7 @@ public class MinecraftServer extends Object {
 		if (players == null) {
 			return 0;
 		}
-		return serverJSON.optJSONObject("players").optInt("max");
+		return players.optInt("max");
 	}
 
 	public int onlinePlayers() {
@@ -86,11 +86,11 @@ public class MinecraftServer extends Object {
 		if (players == null) {
 			return 0;
 		}
-		return serverJSON.optJSONObject("players").optInt("online");
+		return players.optInt("online");
 	}
 
 	public ArrayList<String> playerList() {
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> result = new ArrayList<>();
 		result.clear();
 		JSONObject players = serverJSON.optJSONObject("players");
 		if (players == null) {
@@ -121,10 +121,9 @@ public class MinecraftServer extends Object {
 	public String description() {
 		StringBuilder result = new StringBuilder();
 		String desc = serverJSON.optString("description");
-		if (serverJSON.optJSONObject("description") != null) {
-			if (serverJSON.optJSONObject("description").optString("text") != null) {
-				desc = serverJSON.optJSONObject("description").optString("text");
-			}
+		JSONObject descriptionObj = serverJSON.optJSONObject("description");
+		if (descriptionObj != null) {
+			desc = descriptionObj.optString("text");
         }
 		result.append("<body style='background-color: transparent; color: white; margin: 0; padding: 0;'><span>");
 		int curChar = 0;
@@ -237,7 +236,7 @@ public class MinecraftServer extends Object {
 	public Bitmap image() {
 		String imagedata = serverJSON.optString("favicon");
 		try {
-			return getThumbnail(imagedata);
+			return getThumbnail(imageData);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -246,10 +245,6 @@ public class MinecraftServer extends Object {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public String asRawJSON() {
-		return serverData;
 	}
 
 	public void query() {
@@ -304,17 +299,11 @@ public class MinecraftServer extends Object {
 			do {
 				bytesRead += in.read(buffer, bytesRead, jsonLength - bytesRead);
 			} while (bytesRead < jsonLength);
-			if (bytesRead < jsonLength) {
-				// failed = true;
-				Log.i(TAG,
-						"JSON blob size mismatch, expected "
-								.concat(Integer.toString(jsonLength))
-								.concat(", got ")
-								.concat(Integer.toString(bytesRead)));
-				// throw new InputMismatchException("JSON blob size mismatch");
-			}
 			serverData = new String(buffer, 0, bytesRead);
 			serverJSON = new JSONObject(serverData);
+			in.close();
+			out.close();
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
