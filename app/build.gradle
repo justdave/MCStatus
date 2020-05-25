@@ -1,37 +1,21 @@
 apply plugin: 'com.android.application'
-import com.android.builder.core.DefaultManifestParser
 
 android {
-    signingConfigs {
-        signingkey {
-            storeFile file('/home/dave/.android-keystore/playstorekeys')
-        }
-    }
-    compileSdkVersion 19
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "net.justdave.mcstatus"
         minSdkVersion 19
-        targetSdkVersion 19
+        targetSdkVersion 29
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            signingConfig getSigningConfig()
-            applicationVariants.all { variant ->
-                variant.outputs.each { output ->
-                    def file = output.outputFile
-                    def manifestParser = new DefaultManifestParser()
-                    def String versionName = manifestParser.getVersionName((File) android.sourceSets.main.manifest.srcFile)
-                    def fileName = project.getRootProject().name + "-" + versionName + ".apk"
-                    output.outputFile = new File(file.parent, fileName)
-                }
-            }
         }
     }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.1.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
