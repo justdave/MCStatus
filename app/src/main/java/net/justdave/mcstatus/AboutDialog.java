@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.util.Linkify;
@@ -35,7 +36,11 @@ public class AboutDialog extends Dialog {
         String version = "???";
         int vCode = 0;
         TextView tv = findViewById(R.id.info_text);
-        tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info), Html.FROM_HTML_MODE_LEGACY));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info), Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info)));
+        }
         tv.setLinkTextColor(Color.BLUE);
         Linkify.addLinks(tv, Linkify.ALL);
         TextView ver = findViewById(R.id.version_string);
