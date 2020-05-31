@@ -13,7 +13,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,15 +23,13 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
-public class MinecraftServer extends Object {
+public class MinecraftServer {
 	private static final String TAG = MinecraftServer.class.getSimpleName();
 	private static final int THUMBNAIL_SIZE = 64;
 
 	private String serverName = "My Minecraft Server";
 	private String serverAddress = "localhost";
 	private int queryPort = 25565; // the default minecraft query port
-	private Socket socket = null;
-	private String serverData;
 	private JSONObject serverJSON = new JSONObject();
 
 	public MinecraftServer() { // default to localhost:25565
@@ -41,7 +38,7 @@ public class MinecraftServer extends Object {
 
 	public MinecraftServer(String name, String address) throws URISyntaxException {
         serverName = name;
-		Log.i(TAG, "new MincraftServer(".concat(address).concat(")"));
+		Log.i(TAG, "new MinecraftServer(".concat(address).concat(")"));
 		URI uri = new URI("my://" + address);
 		serverAddress = uri.getHost();
 		if (uri.getPort() > 0) {
@@ -78,7 +75,7 @@ public class MinecraftServer extends Object {
 		if (players == null) {
 			return 0;
 		}
-		return serverJSON.optJSONObject("players").optInt("max");
+		return players.optInt("max");
 	}
 
 	public int onlinePlayers() {
@@ -86,11 +83,11 @@ public class MinecraftServer extends Object {
 		if (players == null) {
 			return 0;
 		}
-		return serverJSON.optJSONObject("players").optInt("online");
+		return players.optInt("online");
 	}
 
 	public ArrayList<String> playerList() {
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> result = new ArrayList<>();
 		result.clear();
 		JSONObject players = serverJSON.optJSONObject("players");
 		if (players == null) {
@@ -121,10 +118,9 @@ public class MinecraftServer extends Object {
 	public String description() {
 		StringBuilder result = new StringBuilder();
 		String desc = serverJSON.optString("description");
-		if (serverJSON.optJSONObject("description") != null) {
-			if (serverJSON.optJSONObject("description").optString("text") != null) {
-				desc = serverJSON.optJSONObject("description").optString("text");
-			}
+		JSONObject descriptionObj = serverJSON.optJSONObject("description");
+		if (descriptionObj != null) {
+			desc = descriptionObj.optString("text");
         }
 		result.append("<body style='background-color: transparent; color: white; margin: 0; padding: 0;'><span>");
 		int curChar = 0;
@@ -235,9 +231,11 @@ public class MinecraftServer extends Object {
 	}
 
 	public Bitmap image() {
-		String imagedata = serverJSON.optString("favicon");
+		String imageData = serverJSON.optString("favicon");
+		if (imageData.isEmpty())
+			return null;
 		try {
-			return getThumbnail(imagedata);
+			return getThumbnail(imageData);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -248,12 +246,9 @@ public class MinecraftServer extends Object {
 		return null;
 	}
 
-	public String asRawJSON() {
-		return serverData;
-	}
-
 	public void query() {
 		Log.i(TAG, "query() called on ".concat(serverAddress()));
+		Socket socket;
 		try {
 			socket = new Socket(serverAddress, queryPort);
 			socket.setSoTimeout(10000); // 10 second read timeout
@@ -288,15 +283,26 @@ public class MinecraftServer extends Object {
 			out.write(0x00); // status ping (2nd byte)
 
 			int packetLength = readVarInt(in); // size of entire packet
+			String serverData;
 			if (packetLength < 11) {
-				Log.i(TAG, "packet length too small");
+				Log.i(TAG, String.format("%s, %s: packet length too small: %d", serverName, serverAddress, packetLength));
 				serverData = null;
-				setDescription("Invalid response from server (packet too small - server may be in the process of restarting, try again in a few seconds)");
+				setDescription("Invalid response from server (server may be in the process of restarting, try again in a few seconds)");
+				in.close();
+				out.close();
+				socket.close();
 				return;
 			}
-			in.read(); // packet type - going to ignore it because we should
-						// only ever get the one type back anyway
+			final int packetType = in.read(); // packet type - going to ignore it because we should
+											  // only ever get the one type back anyway
+			Log.d(TAG, String.format("%s, %s: packet type: %d", serverName, serverAddress, packetType));
 			int jsonLength = readVarInt(in); // size of JSON blob
+			if (jsonLength < 0){
+				in.close();
+				out.close();
+				socket.close();
+				return;
+			}
 			byte[] buffer = new byte[jsonLength + 10]; // a little more than
 														// we're expecting just
 														// to be safe
@@ -304,17 +310,11 @@ public class MinecraftServer extends Object {
 			do {
 				bytesRead += in.read(buffer, bytesRead, jsonLength - bytesRead);
 			} while (bytesRead < jsonLength);
-			if (bytesRead < jsonLength) {
-				// failed = true;
-				Log.i(TAG,
-						"JSON blob size mismatch, expected "
-								.concat(Integer.toString(jsonLength))
-								.concat(", got ")
-								.concat(Integer.toString(bytesRead)));
-				// throw new InputMismatchException("JSON blob size mismatch");
-			}
 			serverData = new String(buffer, 0, bytesRead);
 			serverJSON = new JSONObject(serverData);
+			in.close();
+			out.close();
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -324,21 +324,28 @@ public class MinecraftServer extends Object {
 		}
 	}
 
-	private int readVarInt(InputStream in) throws InputMismatchException {
+	private int readVarInt(InputStream in) {
 		int theInt = 0;
-		int byteCounter = 0;
+//		int byteCounter = 0;
 
-		while (true) {
+		for (int i = 0; i < 6; i++){
 			int theByte;
 			try {
 				theByte = in.read();
-			} catch (IOException e) {
+			} catch (IOException e){
 				e.printStackTrace();
+				Log.w(TAG, "readVarInt: Failed to retrieve data from server");
 				return 0;
 			}
-			theInt |= (theByte & 0x7F) << (byteCounter++ * 7);
-			if (byteCounter > 5) {
-				throw new InputMismatchException("Int too big");
+
+			theInt |= (theByte & 0x7F) << (7 * i);
+//			if (byteCounter > 5) {
+//				Log.w(TAG, String.format("readVarInt: invalid data received, %d bytes", byteCounter));
+//				return -1;
+//			}
+			if (theByte == 0xffffffff){
+				Log.w(TAG, String.format("readVarInt: received unexpected byte value: %#x", theByte));
+				return -1;
 			}
 			if ((theByte & 0x80) != 128) {
 				break;
@@ -347,41 +354,36 @@ public class MinecraftServer extends Object {
 		return theInt;
 	}
 
-	public Bitmap getThumbnail(String uri) throws FileNotFoundException,
-			IOException {
+	public Bitmap getThumbnail(String uri) throws IOException {
 		// data:image/png;base64,iVBORw0KGgoAAAANSUhEUgA
 		final String prefixString = "data:image/png;base64,";
-		byte[] imagedata64 = new byte[0];
-		byte[] imagedata = new byte[0];
+		byte[] imageDataBase64;
+		byte[] imageData;
 		if (uri.startsWith(prefixString)) {
-			imagedata64 = uri.substring(prefixString.length()).getBytes();
+			imageDataBase64 = uri.substring(prefixString.length()).getBytes();
 		} else {
 			throw new FileNotFoundException("Not the correct URI Prefix");
 		}
-		imagedata = Base64.decode(imagedata64, Base64.DEFAULT);
+		imageData = Base64.decode(imageDataBase64, Base64.DEFAULT);
 		BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
 		onlyBoundsOptions.inJustDecodeBounds = true;
-		onlyBoundsOptions.inDither = true;// optional
 		onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// optional
-		BitmapFactory.decodeByteArray(imagedata, 0, imagedata.length,
+		BitmapFactory.decodeByteArray(imageData, 0, imageData.length,
 				onlyBoundsOptions);
 		if ((onlyBoundsOptions.outWidth == -1)
 				|| (onlyBoundsOptions.outHeight == -1))
 			return null;
 
-		int originalSize = (onlyBoundsOptions.outHeight > onlyBoundsOptions.outWidth) ? onlyBoundsOptions.outHeight
-				: onlyBoundsOptions.outWidth;
+		int originalSize = Math.max(onlyBoundsOptions.outHeight, onlyBoundsOptions.outWidth);
 
 		double ratio = (originalSize > THUMBNAIL_SIZE) ? (originalSize / THUMBNAIL_SIZE)
 				: 1.0;
 
 		BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
 		bitmapOptions.inSampleSize = getPowerOfTwoForSampleRatio(ratio);
-		bitmapOptions.inDither = true;// optional
 		bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// optional
-		Bitmap bitmap = BitmapFactory.decodeByteArray(imagedata, 0,
-				imagedata.length, bitmapOptions);
-		return bitmap;
+		return BitmapFactory.decodeByteArray(imageData, 0,
+				imageData.length, bitmapOptions);
 	}
 
 	private static int getPowerOfTwoForSampleRatio(double ratio) {

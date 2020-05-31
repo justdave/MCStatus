@@ -13,7 +13,7 @@ import android.util.Log;
 public class ServerDB {
 	private static final String TAG = ServerDB.class.getSimpleName();
 	private SQLiteDatabase database;
-	private Database dbHelper;
+	final private Database dbHelper;
 
 	public ServerDB(Context context) {
 		dbHelper = new Database(context);

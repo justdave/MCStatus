@@ -34,11 +34,11 @@ public class AboutDialog extends Dialog {
         PackageInfo p;
         String version = "???";
         int vCode = 0;
-        TextView tv = (TextView) findViewById(R.id.info_text);
-        tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info)));
+        TextView tv = findViewById(R.id.info_text);
+        tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info), Html.FROM_HTML_MODE_LEGACY));
         tv.setLinkTextColor(Color.BLUE);
         Linkify.addLinks(tv, Linkify.ALL);
-        TextView ver = (TextView) findViewById(R.id.version_string);
+        TextView ver = findViewById(R.id.version_string);
         Context aContext = mContext.getApplicationContext();
         try {
             p = aContext.getPackageManager().getPackageInfo(aContext.getPackageName(), 0);
@@ -49,7 +49,7 @@ public class AboutDialog extends Dialog {
             e.printStackTrace();
         }
         ver.setText(aContext.getResources().getString(R.string.about_version, version, vCode));
-        Button button = (Button) findViewById(R.id.about_ok_button);
+        Button button = findViewById(R.id.about_ok_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 dismiss();

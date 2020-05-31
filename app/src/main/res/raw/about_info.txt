@@ -2,5 +2,6 @@ To request new features or file bug reports, please visit<br>
 <b>https://github.com/justdave/MCStatus</b><br>
 <br>
 Copyright 2014-2015 David D. Miller<br>
+Copyright 2020 Rick van Schijndel<br>
 <br>
 Licensed under the MIT License<br>

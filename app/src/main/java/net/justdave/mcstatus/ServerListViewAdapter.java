@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		implements View.OnLongClickListener, View.OnClickListener {
 	private static final String TAG = ServerListViewAdapter.class
@@ -41,25 +43,26 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Log.i(TAG, "getView(".concat(Integer.toString(position)).concat(")"));
+//		Log.i(TAG, "getView(".concat(Integer.toString(position)).concat(")"));
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = convertView;
 		if (rowView == null) {
+			assert inflater != null;
 			rowView = inflater.inflate(R.layout.server_listitem, parent, false);
 		}
 		SparseBooleanArray checkedItems = listView.getCheckedItemPositions();
 		if (checkedItems.get(position)) {
-			Log.i(TAG, "View is selected.");
+//			Log.i(TAG, "View is selected.");
 			rowView.setBackgroundColor(Color.parseColor("#AAAAAA"));
 		} else {
-			Log.i(TAG, "View is not selected.");
-			rowView.setBackgroundColor(color.background_dark);
+//			Log.i(TAG, "View is not selected.");
+			rowView.setBackgroundColor(ContextCompat.getColor(context, color.background_dark));
 		}
-		TextView server_name = (TextView) rowView
+		TextView server_name = rowView
 				.findViewById(R.id.server_name);
 		server_name.setText(values.get(position).serverName());
-		WebView server_description = (WebView) rowView
+		WebView server_description = rowView
 				.findViewById(R.id.server_description);
 		server_description.loadData(values.get(position).description(),
 				"text/html", "utf8");
@@ -122,15 +125,15 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 			}
 		});
 
-		ImageView server_icon = (ImageView) rowView
+		ImageView server_icon = rowView
 				.findViewById(R.id.server_icon);
 		server_icon.setImageBitmap(values.get(position).image());
-		TextView server_usercount = (TextView) rowView
+		TextView server_usercount = rowView
 				.findViewById(R.id.server_usercount);
 		server_usercount.setText(Integer
 				.toString(values.get(position).onlinePlayers()).concat("/")
 				.concat(Integer.toString(values.get(position).maxPlayers())));
-		TextView server_playerlist = (TextView) rowView
+		TextView server_playerlist = rowView
 				.findViewById(R.id.server_playerlist);
 		StringBuilder playerlist = new StringBuilder();
 		ListIterator<String> playerIterator = values.get(position).playerList()
@@ -142,7 +145,7 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 			}
 		}
 		server_playerlist.setText(playerlist.toString());
-		TextView server_userlist_header = (TextView) rowView
+		TextView server_userlist_header = rowView
 				.findViewById(R.id.server_userlist_header);
 		if (playerlist.length() > 0) {
 			server_userlist_header.setVisibility(View.VISIBLE);
@@ -151,7 +154,7 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 			server_userlist_header.setVisibility(View.GONE);
 			server_playerlist.setVisibility(View.GONE);
 		}
-		TextView server_serverversion = (TextView) rowView
+		TextView server_serverversion = rowView
 				.findViewById(R.id.server_serverversion);
 		server_serverversion.setText(values.get(position).serverVersion());
 		rowView.setClickable(false);
@@ -173,13 +176,13 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 
 	@Override
 	public void onClick(View v) {
-		Log.i(TAG, "onClick() got called.");
+//		Log.i(TAG, "onClick() got called.");
 		if (listView.getCheckedItemCount() > 0) {
 			SparseBooleanArray checkedItems = listView
 					.getCheckedItemPositions();
-			boolean checked = checkedItems.get(Integer.valueOf((String) v
+			boolean checked = checkedItems.get(Integer.parseInt((String) v
 					.getTag()));
-			listView.setItemChecked(Integer.valueOf((String) v.getTag()),
+			listView.setItemChecked(Integer.parseInt((String) v.getTag()),
 					!checked);
 			notifyDataSetChanged();
 		}
@@ -187,9 +190,9 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 
 	@Override
 	public boolean onLongClick(View v) {
-		Log.i(TAG, "onLongClick() got called.");
+//		Log.i(TAG, "onLongClick() got called.");
 		if (listView.getCheckedItemCount() == 0) {
-			listView.setItemChecked(Integer.valueOf((String) v.getTag()), true);
+			listView.setItemChecked(Integer.parseInt((String) v.getTag()), true);
 			notifyDataSetChanged();
 		}
 		return true;

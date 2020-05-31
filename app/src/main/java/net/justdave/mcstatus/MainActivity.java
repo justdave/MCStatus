@@ -1,7 +1,6 @@
 package net.justdave.mcstatus;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import android.os.Bundle;
@@ -28,7 +27,7 @@ import android.widget.ListView;
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private ArrayList<MinecraftServer> serverlist = new ArrayList<MinecraftServer>();
+    final private ArrayList<MinecraftServer> serverlist = new ArrayList<>();
     private ServerListViewAdapter adapter;
     private ListView listView;
     private ServerDB database;
@@ -45,7 +44,7 @@ public class MainActivity extends Activity {
         database.getAllServers(serverlist);
         adapter = new ServerListViewAdapter(getApplicationContext(), serverlist);
         setContentView(R.layout.activity_main);
-        listView = (ListView) findViewById(R.id.server_list);
+        listView = findViewById(R.id.server_list);
         listView.setAdapter(adapter);
         adapter.setListView(listView);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
@@ -75,20 +74,17 @@ public class MainActivity extends Activity {
                         @SuppressLint("InflateParams") View promptsView = LayoutInflater.from(MainActivity.this).inflate(
                                 R.layout.addserver_dialog, null);
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                                MainActivity.this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                                MainActivity.this,
+                                android.R.style.Theme_DeviceDefault_Dialog_Alert);
                         alertDialogBuilder.setView(promptsView);
 
-                        final EditText serverName = (EditText) promptsView
+                        final EditText serverName = promptsView
                                 .findViewById(R.id.edit_server_name);
-                        final EditText serverAddress = (EditText) promptsView
+                        final EditText serverAddress = promptsView
                                 .findViewById(R.id.edit_server_address);
                         SparseBooleanArray selected = listView
                                 .getCheckedItemPositions();
-                        Iterator<MinecraftServer> it = serverlist
-                                .iterator();
-                        while (it.hasNext()) {
-                            final MinecraftServer thisServer = it
-                                    .next();
+                        for (final MinecraftServer thisServer : serverlist) {
                             if (selected.get(serverlist
                                     .indexOf(thisServer))) {
                                 serverName.setText(thisServer.serverName());
@@ -128,7 +124,7 @@ public class MainActivity extends Activity {
                     case R.id.action_deleteserver:
                         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
                                 MainActivity.this,
-                                AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                                android.R.style.Theme_DeviceDefault_Dialog_Alert);
                         myAlertDialog
                                 .setCancelable(false)
                                 .setTitle("Delete Server(s)")
@@ -155,11 +151,7 @@ public class MainActivity extends Activity {
                                                 Log.i(TAG, "Delete picked");
                                                 SparseBooleanArray selected = listView
                                                         .getCheckedItemPositions();
-                                                Iterator<MinecraftServer> it = serverlist
-                                                        .iterator();
-                                                while (it.hasNext()) {
-                                                    MinecraftServer thisServer = it
-                                                            .next();
+                                                for (MinecraftServer thisServer : serverlist) {
                                                     if (selected.get(serverlist
                                                             .indexOf(thisServer))) {
                                                         database.delete(thisServer
@@ -186,7 +178,7 @@ public class MainActivity extends Activity {
                 // listView.setItemChecked(position, checked);
                 mode.getMenu().findItem(R.id.action_editserver)
                         .setVisible(listView.getCheckedItemCount() == 1);
-                mode.setTitle(Integer.valueOf(listView.getCheckedItemCount())
+                mode.setTitle(listView.getCheckedItemCount()
                         + " selected");
             }
 
@@ -201,6 +193,7 @@ public class MainActivity extends Activity {
     public void refresh() {
         LayoutInflater inflater = (LayoutInflater) getApplicationContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        assert inflater != null;
         ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_animation,
                 null);
 
@@ -279,12 +272,12 @@ public class MainActivity extends Activity {
                 View promptsView = LayoutInflater.from(this).inflate(
                         R.layout.addserver_dialog, null);
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                        this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                        this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
                 alertDialogBuilder.setView(promptsView);
 
-                final EditText serverName = (EditText) promptsView
+                final EditText serverName = promptsView
                         .findViewById(R.id.edit_server_name);
-                final EditText serverAddress = (EditText) promptsView
+                final EditText serverAddress = promptsView
                         .findViewById(R.id.edit_server_address);
 
                 alertDialogBuilder
@@ -321,14 +314,14 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
-        Log.i(TAG, "onResume() called");
+//        Log.i(TAG, "onResume() called");
         database.open();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        Log.i(TAG, "onPause() called");
+//        Log.i(TAG, "onPause() called");
         database.close();
         super.onPause();
     }
