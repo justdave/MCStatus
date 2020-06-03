@@ -19,7 +19,8 @@
         android:layout_height="wrap_content"
         android:hint="@string/edit_server_name_hint"
         android:inputType="textCapWords"
-        android:textColor="@android:color/primary_text_dark" >
+        android:textColor="@android:color/primary_text_dark"
+        android:importantForAutofill="no">
 
         <requestFocus />
     </EditText>
@@ -37,6 +38,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit_server_address_hint"
-        android:textColor="@android:color/primary_text_dark" />
+        android:inputType="textUri"
+        android:textColor="@android:color/primary_text_dark"
+        android:importantForAutofill="no" />
 
 </LinearLayout>
