@@ -76,54 +76,6 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		server_description.setTag(String.valueOf(position));
 		server_description.setOnLongClickListener(this);
 		server_description.setOnClickListener(this);
-		server_description.setOnTouchListener(new View.OnTouchListener() {
-
-			public final static int FINGER_RELEASED = 0;
-			public final static int FINGER_TOUCHED = 1;
-			public final static int FINGER_DRAGGING = 2;
-			public final static int FINGER_UNDEFINED = 3;
-
-			private int fingerState = FINGER_RELEASED;
-
-			@Override
-			public boolean onTouch(View view, MotionEvent motionEvent) {
-
-				switch (motionEvent.getAction()) {
-
-				case MotionEvent.ACTION_DOWN:
-					if (fingerState == FINGER_RELEASED)
-						fingerState = FINGER_TOUCHED;
-					else
-						fingerState = FINGER_UNDEFINED;
-					break;
-
-				case MotionEvent.ACTION_UP:
-					if (fingerState != FINGER_DRAGGING) {
-						fingerState = FINGER_RELEASED;
-
-						onClick(view);
-
-					}
-					else
-						fingerState = FINGER_RELEASED;
-					break;
-
-				case MotionEvent.ACTION_MOVE:
-					if (fingerState == FINGER_TOUCHED
-							|| fingerState == FINGER_DRAGGING)
-						fingerState = FINGER_DRAGGING;
-					else
-						fingerState = FINGER_UNDEFINED;
-					break;
-
-				default:
-					fingerState = FINGER_UNDEFINED;
-
-				}
-
-				return false;
-			}
-		});
 
 		ImageView server_icon = rowView
 				.findViewById(R.id.server_icon);
