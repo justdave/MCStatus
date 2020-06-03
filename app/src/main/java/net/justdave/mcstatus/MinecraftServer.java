@@ -252,15 +252,14 @@ public class MinecraftServer {
 		try {
 			socket = new Socket(serverAddress, queryPort);
 			socket.setSoTimeout(10000); // 10 second read timeout
+		} catch (IllegalArgumentException e) {
+			setDescription("Error: " + e.getLocalizedMessage());
+			return;
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			setDescription("Lookup failed: Unknown host");
-			e.printStackTrace();
+			setDescription("Error: Lookup failed: Unknown host");
 			return;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			setDescription(e.toString());
-			e.printStackTrace();
+			setDescription("Error: " + e.getLocalizedMessage());
 			return;
 		}
 		// See http://wiki.vg/Protocol (Status Ping)
