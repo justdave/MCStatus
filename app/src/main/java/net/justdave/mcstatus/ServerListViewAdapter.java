@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
@@ -41,8 +42,8 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		listView = mView;
 	}
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	@Override @NonNull
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 //		Log.i(TAG, "getView(".concat(Integer.toString(position)).concat(")"));
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -102,10 +103,9 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 
 						onClick(view);
 
-					} else if (fingerState == FINGER_DRAGGING)
-						fingerState = FINGER_RELEASED;
+					}
 					else
-						fingerState = FINGER_UNDEFINED;
+						fingerState = FINGER_RELEASED;
 					break;
 
 				case MotionEvent.ACTION_MOVE:

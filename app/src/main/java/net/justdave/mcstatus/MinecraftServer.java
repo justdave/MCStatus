@@ -236,11 +236,7 @@ public class MinecraftServer {
 			return null;
 		try {
 			return getThumbnail(imageData);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -252,13 +248,10 @@ public class MinecraftServer {
 		try {
 			socket = new Socket(serverAddress, queryPort);
 			socket.setSoTimeout(10000); // 10 second read timeout
-		} catch (IllegalArgumentException e) {
-			setDescription("Error: " + e.getLocalizedMessage());
-			return;
 		} catch (UnknownHostException e) {
 			setDescription("Error: Lookup failed: Unknown host");
 			return;
-		} catch (IOException e) {
+		} catch (IllegalArgumentException | IOException e) {
 			setDescription("Error: " + e.getLocalizedMessage());
 			return;
 		}
@@ -285,7 +278,6 @@ public class MinecraftServer {
 			String serverData;
 			if (packetLength < 11) {
 				Log.i(TAG, String.format("%s, %s: packet length too small: %d", serverName, serverAddress, packetLength));
-				serverData = null;
 				setDescription("Invalid response from server (server may be in the process of restarting, try again in a few seconds)");
 				in.close();
 				out.close();
@@ -314,10 +306,7 @@ public class MinecraftServer {
 			in.close();
 			out.close();
 			socket.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
+		} catch (JSONException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -375,7 +364,7 @@ public class MinecraftServer {
 
 		int originalSize = Math.max(onlyBoundsOptions.outHeight, onlyBoundsOptions.outWidth);
 
-		double ratio = (originalSize > THUMBNAIL_SIZE) ? (originalSize / THUMBNAIL_SIZE)
+		double ratio = (originalSize > THUMBNAIL_SIZE) ? (double)(originalSize / THUMBNAIL_SIZE)
 				: 1.0;
 
 		BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
