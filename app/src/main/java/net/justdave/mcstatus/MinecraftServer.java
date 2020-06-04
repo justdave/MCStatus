@@ -122,7 +122,7 @@ public class MinecraftServer {
 		if (descriptionObj != null) {
 			desc = descriptionObj.optString("text");
         }
-		result.append("<body style='background-color: transparent; color: white; margin: 0; padding: 0;'><span>");
+		result.append("<body style=\"background-color: transparent; color: white; margin: 0; padding: 0;\"><span>");
 		int curChar = 0;
 		String color = "";
 		String decoration = "";
@@ -214,14 +214,14 @@ public class MinecraftServer {
 					decoration = "";
 					color = "";
 				}
-				result.append("</span><span style='");
+				result.append("</span><span style=\"");
                 if (color.length() > 0) {
                 	result.append("color: ".concat(color).concat("; "));
                 }
                 if (decoration.length() > 0) {
                 	result.append("text-decoration: ".concat(decoration).concat("; "));
                 }
-                result.append("'>");
+                result.append("\">");
 			} else {
 				result.append(theChar);
 			}
