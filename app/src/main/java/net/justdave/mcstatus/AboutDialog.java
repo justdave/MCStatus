@@ -20,7 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class AboutDialog extends Dialog {
-    private static Context mContext = null;
+    private final Context mContext;
     private static final String TAG = AboutDialog.class.getSimpleName();
 
     public AboutDialog(Context context) {
@@ -63,7 +63,7 @@ public class AboutDialog extends Dialog {
  
     }
 
-    public static String readRawTextFile(int id) {
+    public String readRawTextFile(int id) {
 
         InputStream inputStream = mContext.getResources().openRawResource(id);
 
