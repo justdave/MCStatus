@@ -7,6 +7,7 @@ import java.util.Locale;
 import android.R.color;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Base64;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -65,8 +66,8 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		server_name.setText(values.get(position).serverName());
 		WebView server_description = rowView
 				.findViewById(R.id.server_description);
-		server_description.loadData(values.get(position).description(),
-				"text/html", "utf8");
+		server_description.loadData(Base64.encodeToString(values.get(position).description().getBytes(), Base64.DEFAULT),
+				"text/html", "base64");
 		server_description.setBackgroundColor(0x00000000);
 		server_description.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 		server_description.setFocusable(false);
