@@ -8,13 +8,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:labelFor="@+id/edit_server_name"
         android:text="@string/edit_server_name"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@android:color/primary_text_dark" />
 
     <EditText
-        android:id="@id/edit_server_name"
+        android:id="@+id/edit_server_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit_server_name_hint"
@@ -28,13 +27,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:labelFor="@+id/edit_server_address"
         android:text="@string/edit_server_address"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@android:color/primary_text_dark" />
 
     <EditText
-        android:id="@id/edit_server_address"
+        android:id="@+id/edit_server_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/edit_server_address_hint"
