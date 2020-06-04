@@ -2,6 +2,7 @@ package net.justdave.mcstatus;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
+import java.util.Locale;
 
 import android.R.color;
 import android.content.Context;
@@ -82,8 +83,7 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		server_icon.setImageBitmap(values.get(position).image());
 		TextView server_usercount = rowView
 				.findViewById(R.id.server_usercount);
-		server_usercount.setText(Integer
-				.toString(values.get(position).onlinePlayers()).concat("/")
+		server_usercount.setText(String.format(Locale.getDefault(), "%d", values.get(position).onlinePlayers()).concat("/")
 				.concat(Integer.toString(values.get(position).maxPlayers())));
 		TextView server_playerlist = rowView
 				.findViewById(R.id.server_playerlist);
