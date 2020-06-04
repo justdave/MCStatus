@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -191,10 +190,7 @@ public class MainActivity extends Activity {
     }
 
     public void refresh() {
-        LayoutInflater inflater = (LayoutInflater) getApplicationContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        assert inflater != null;
-        ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_animation,
+        ImageView iv = (ImageView) View.inflate(getApplicationContext(), R.layout.refresh_animation,
                 null);
 
         Animation rotation = AnimationUtils.loadAnimation(
