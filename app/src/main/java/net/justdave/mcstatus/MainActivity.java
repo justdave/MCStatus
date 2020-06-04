@@ -72,9 +72,17 @@ public class MainActivity extends Activity {
                         Log.i(TAG, "EDIT selection:");
                         @SuppressLint("InflateParams") View promptsView = LayoutInflater.from(MainActivity.this).inflate(
                                 R.layout.addserver_dialog, null);
-                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                                MainActivity.this,
-                                android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                        AlertDialog.Builder alertDialogBuilder;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                            alertDialogBuilder = new AlertDialog.Builder(
+                                    MainActivity.this,
+                                    android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                        }
+                        else {
+                            alertDialogBuilder = new AlertDialog.Builder(
+                                    MainActivity.this,
+                                    AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                        }
                         alertDialogBuilder.setView(promptsView);
 
                         final EditText serverName = promptsView
@@ -121,9 +129,17 @@ public class MainActivity extends Activity {
 
                         break;
                     case R.id.action_deleteserver:
-                        AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
-                                MainActivity.this,
-                                android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                        AlertDialog.Builder myAlertDialog;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                            myAlertDialog = new AlertDialog.Builder(
+                                    MainActivity.this,
+                                    android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                        }
+                        else {
+                            myAlertDialog = new AlertDialog.Builder(
+                                    MainActivity.this,
+                                    AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                        }
                         myAlertDialog
                                 .setCancelable(false)
                                 .setTitle("Delete Server(s)")
@@ -267,8 +283,15 @@ public class MainActivity extends Activity {
             case R.id.action_addserver:
                 View promptsView = LayoutInflater.from(this).inflate(
                         R.layout.addserver_dialog, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                        this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                AlertDialog.Builder alertDialogBuilder;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    alertDialogBuilder = new AlertDialog.Builder(
+                            this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                }
+                else {
+                    alertDialogBuilder = new AlertDialog.Builder(
+                            this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                }
                 alertDialogBuilder.setView(promptsView);
 
                 final EditText serverName = promptsView
