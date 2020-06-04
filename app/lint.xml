@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="UnusedResources">
+        <ignore path="src/main/res/mipmap-hdpi/meterblocks_round.png" />
+        <ignore path="src/main/res/mipmap-mdpi/meterblocks_round.png" />
+        <ignore path="src/main/res/mipmap-xhdpi/meterblocks_round.png" />
+        <ignore path="src/main/res/mipmap-xxhdpi/meterblocks_round.png" />
+        <ignore path="src/main/res/mipmap-xxxhdpi/meterblocks_round.png" />
+    </issue>
+</lint>
