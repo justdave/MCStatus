@@ -117,116 +117,169 @@ public class MinecraftServer {
 
 	public String description() {
 		StringBuilder result = new StringBuilder();
+		JSONArray descExtra = null;
 		String desc = serverJSON.optString("description");
+		Log.i(TAG, "desc = " + desc);
 		JSONObject descriptionObj = serverJSON.optJSONObject("description");
 		if (descriptionObj != null) {
 			desc = descriptionObj.optString("text");
+			descExtra = descriptionObj.optJSONArray("extra");
         }
-		result.append("<body style=\"background-color: transparent; color: white; margin: 0; padding: 0;\"><span>");
+		Log.i(TAG, "desc = " + desc);
+		result.append("<body style=\"background-color: transparent; color: white; margin: 0; padding: 0;\">");
 		int curChar = 0;
-		String color = "";
-		String decoration = "";
-		while (curChar < desc.length()) {
-			char theChar = desc.charAt(curChar++);
-			if (theChar == '§') {
-				char code = desc.charAt(curChar++);
-				switch (code) {
-				case '0':
-					color = "#000000";
-					decoration = "";
-					break;
-				case '1':
-					color = "#0000aa";
-					decoration = "";
-					break;
-				case '2':
-					color = "#00aa00";
-					decoration = "";
-					break;
-				case '3':
-					color = "#00aaaa";
-					decoration = "";
-					break;
-				case '4':
-					color = "#aa0000";
-					decoration = "";
-					break;
-				case '5':
-					color = "#aa00aa";
-					decoration = "";
-					break;
-				case '6':
-					color = "#ffaa00";
-					decoration = "";
-					break;
-				case '7':
-					color = "#aaaaaa";
-					decoration = "";
-					break;
-				case '8':
-					color = "#555555";
-					decoration = "";
-					break;
-				case '9':
-					color = "#5555ff";
-					decoration = "";
-					break;
-				case 'a':
-					color = "#55ff55";
-					decoration = "";
-					break;
-				case 'b':
-					color = "#55ffff";
-					decoration = "";
-					break;
-				case 'c':
-					color = "#ff5555";
-					decoration = "";
-					break;
-				case 'd':
-					color = "#ff55ff";
-					decoration = "";
-					break;
-				case 'e':
-					color = "#ffff55";
-					decoration = "";
-					break;
-				case 'f':
-					color = "#ffffff";
-					decoration = "";
-					break;
-				case 'k':
-					color = "";
-					break;
-				case 'l':
-					decoration = "bold";
-					break;
-				case 'm':
-					decoration = "strikethrough";
-					break;
-				case 'n':
-					decoration = "underscore";
-					break;
-				case 'o':
-					decoration = "italic";
-					break;
-				case 'r':
-					decoration = "";
-					color = "";
+		if (descExtra != null) {
+			// [{"text":"Welcome","italic":true},{"text":" to","bold":true},{"text":" "},{"text":"Minecraft","strikethrough":true,"underlined":true,"obfuscated":true}]
+			while (curChar < descExtra.length()) {
+				JSONObject chunk = null;
+				try {
+					chunk = descExtra.getJSONObject(curChar++);
+				} catch (JSONException e) {
+					// Log.i(TAG, e.getMessage());
 				}
-				result.append("</span><span style=\"");
-                if (color.length() > 0) {
-                	result.append("color: ".concat(color).concat("; "));
-                }
-                if (decoration.length() > 0) {
-                	result.append("text-decoration: ".concat(decoration).concat("; "));
-                }
-                result.append("\">");
-			} else {
-				result.append(theChar);
+				if (chunk != null){
+					result.append("<span style=\"");
+					try {
+						String color = chunk.getString("color");
+						result.append("color: ").append(color).append("; ");
+					} catch (JSONException e) {
+						// Log.i(TAG, e.getMessage());
+					}
+					try {
+						if(chunk.getBoolean("bold")) {
+							result.append("font-weight: bold; ");
+						}
+					} catch (JSONException e) {
+						// Log.i(TAG, e.getMessage());
+					}
+					try {
+						if(chunk.getBoolean("strikethrough")) {
+							result.append("text-decoration: line-through; ");
+						}
+					} catch (JSONException e) {
+						// Log.i(TAG, e.getMessage());
+					}
+					try {
+						if(chunk.getBoolean("underlined")) {
+							result.append("text-decoration: underscore; ");
+						}
+					} catch (JSONException e) {
+						// Log.i(TAG, e.getMessage());
+					}
+					try {
+						if(chunk.getBoolean("italic")) {
+							result.append("font-style: italic; ");
+						}
+					} catch (JSONException e) {
+						// Log.i(TAG, e.getMessage());
+					}
+
+					result.append("\">");
+					try {
+						String text = chunk.getString("text");
+						result.append(text);
+					} catch (JSONException e) {
+						// Log.i(TAG, e.getMessage());
+					}
+					result.append("</span>");
+				}
 			}
+		} else {
+			String color = "";
+			boolean bold = false;
+			boolean italic = false;
+			boolean strikethrough = false;
+			boolean underlined = false;
+			result.append("<span>");
+			while (curChar < desc.length()) {
+				char theChar = desc.charAt(curChar++);
+				if (theChar == '§') {
+					char code = desc.charAt(curChar++);
+					switch (code) {
+						case '0':
+							color = "#000000";
+							break;
+						case '1':
+							color = "#0000aa";
+							break;
+						case '2':
+							color = "#00aa00";
+							break;
+						case '3':
+							color = "#00aaaa";
+							break;
+						case '4':
+							color = "#aa0000";
+							break;
+						case '5':
+							color = "#aa00aa";
+							break;
+						case '6':
+							color = "#ffaa00";
+							break;
+						case '7':
+							color = "#aaaaaa";
+							break;
+						case '8':
+							color = "#555555";
+							break;
+						case '9':
+							color = "#5555ff";
+							break;
+						case 'a':
+							color = "#55ff55";
+							break;
+						case 'b':
+							color = "#55ffff";
+							break;
+						case 'c':
+							color = "#ff5555";
+							break;
+						case 'd':
+							color = "#ff55ff";
+							break;
+						case 'e':
+							color = "#ffff55";
+							break;
+						case 'f':
+							color = "#ffffff";
+							break;
+						case 'k':
+							color = "";
+							break;
+						case 'l':
+							bold = true;
+							break;
+						case 'm':
+							strikethrough = true;
+							break;
+						case 'n':
+							underlined = true;
+							break;
+						case 'o':
+							italic = true;
+							break;
+						case 'r':
+							bold = false;
+							italic = false;
+							strikethrough = false;
+							underlined = false;
+							color = "";
+					}
+					result.append("</span><span style=\"");
+					if (color.length() > 0) result.append("color: ".concat(color).concat("; "));
+					if (bold) result.append("font-weight: bold; ");
+					if (strikethrough) result.append("text-decoration: line-through; ");
+					if (underlined) result.append("text-decoration: underscore; ");
+					if (italic) result.append("font-style: italic; ");
+					result.append("\">");
+				} else {
+					result.append(theChar);
+				}
+			}
+			result.append("</span>");
 		}
-		result.append("</span></body>");
+		result.append("</body>");
 		return result.toString();
 	}
 
@@ -303,6 +356,7 @@ public class MinecraftServer {
 			} while (bytesRead < jsonLength);
 			serverData = new String(buffer, 0, bytesRead);
 			serverJSON = new JSONObject(serverData);
+			Log.i(TAG, "ServerJSON = " + serverJSON);
 			in.close();
 			out.close();
 			socket.close();
