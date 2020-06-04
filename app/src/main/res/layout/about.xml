@@ -19,7 +19,7 @@
                 android:layout_height="64dp"
                 android:layout_gravity="left|center"
                 android:contentDescription="@string/icon"
-                android:src="@drawable/meterblocks" />
+                android:src="@mipmap/meterblocks" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
