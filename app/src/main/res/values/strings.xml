@@ -12,8 +12,6 @@
     <string name="action_privacy">Privacy</string>
     <string name="icon_description">Server FavIcon</string>
     <string name="edit_server_name">Enter Server Name:</string>
-    <string name="empty_left">Please touch the</string>
-    <string name="empty_right">to add a server</string>
     <string name="edit_server_name_hint">My Minecraft Server</string>
     <string name="edit_server_address">Enter Server Address:</string>
     <string name="edit_server_address_hint">serveraddress[:port]</string>

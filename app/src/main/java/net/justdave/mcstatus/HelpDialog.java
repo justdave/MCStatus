@@ -51,7 +51,6 @@ public class HelpDialog extends Dialog {
             tv.setText(ssb);
         }
 
-        Context aContext = mContext.getApplicationContext();
         Button button = findViewById(R.id.about_ok_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

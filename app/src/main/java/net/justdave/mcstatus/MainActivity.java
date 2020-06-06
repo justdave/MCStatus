@@ -35,8 +35,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.RequiresApi;
-
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 

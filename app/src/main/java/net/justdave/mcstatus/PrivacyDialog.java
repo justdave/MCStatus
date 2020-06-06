@@ -2,14 +2,9 @@ package net.justdave.mcstatus;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,7 +16,6 @@ import java.io.InputStreamReader;
 
 public class PrivacyDialog extends Dialog {
     private final Context mContext;
-    private static final String TAG = PrivacyDialog.class.getSimpleName();
 
     public PrivacyDialog(Context context) {
         super(context);
@@ -39,7 +33,6 @@ public class PrivacyDialog extends Dialog {
             tv.setText(Html.fromHtml(readRawTextFile(R.raw.privacy)));
         }
 
-        Context aContext = mContext.getApplicationContext();
         Button button = findViewById(R.id.about_ok_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
