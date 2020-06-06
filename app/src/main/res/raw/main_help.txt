@@ -1,0 +1,12 @@
+<b>To add a server</b>:<br>
+- Touch the <img src="android:drawable/ic_menu_add"> button in the bar at the top.<br>
+<br>
+<b>To edit or remove a server</b>:<br>
+<br>
+- Long touch any server to enter selection mode (the one you long-touched will be selected)<br>
+<br>
+- Select any additional you wish to also delete (you can only select one to edit)<br>
+<br>
+- Touch the pencil to edit, or the trash can to delete<br>
+<br>
+You can access these instructions again by choosing <b>Help</b> from the menu.<br>

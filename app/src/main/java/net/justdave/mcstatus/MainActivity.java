@@ -1,13 +1,23 @@
 package net.justdave.mcstatus;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.text.Html;
+import android.text.Html.ImageGetter;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -22,6 +32,10 @@ import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.graphics.drawable.Drawable;
+
+import androidx.annotation.RequiresApi;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -44,12 +58,37 @@ public class MainActivity extends Activity {
         adapter = new ServerListViewAdapter(getApplicationContext(), serverlist);
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.server_list);
+
         listView.setAdapter(adapter);
         adapter.setListView(listView);
+
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setItemsCanFocus(false);
         listView.setDescendantFocusability(ListView.FOCUS_BLOCK_DESCENDANTS);
         listView.setEmptyView(findViewById(R.id.empty));
+        View emptyView = listView.getEmptyView();
+        TextView helpView = emptyView.findViewById(R.id.helptext);
+        Log.i(TAG, "helpView: " + helpView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            /* Nugat and up can actually process images! */
+            helpView.setText(Html.fromHtml(readRawTextFile(R.raw.main_help), 0, imgGetter, null));
+        } else {
+            /* below Nugat requires one hell of a hack of a workaround. */
+            String text = readRawTextFile(R.raw.main_help);
+            SpannableStringBuilder ssb = new SpannableStringBuilder();
+            int index = text.indexOf("<img") -1;
+            int index2 = text.indexOf("\">") + 2;
+            SpannableString string1 = new SpannableString(Html.fromHtml(text.substring(0,index)));
+            ImageSpan is = new ImageSpan(getApplicationContext(), android.R.drawable.ic_menu_add);
+            SpannableString string2 = new SpannableString(Html.fromHtml(text.substring(index2)));
+            ssb.append(string1).append(" ");
+            ssb.setSpan(is, ssb.length()-1, ssb.length(), 0);
+            ssb.append(string2);
+            helpView.setText(ssb);
+        }
+        helpView.setBackgroundColor(0x00000000);
+//        listView.setEmptyView(emptyView);
+
         listView.addStatesFromChildren();
         listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
 
@@ -73,7 +112,7 @@ public class MainActivity extends Activity {
                         @SuppressLint("InflateParams") View promptsView = LayoutInflater.from(MainActivity.this).inflate(
                                 R.layout.addserver_dialog, null);
                         AlertDialog.Builder alertDialogBuilder;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                             alertDialogBuilder = new AlertDialog.Builder(
                                     MainActivity.this,
                                     android.R.style.Theme_DeviceDefault_Dialog_Alert);
@@ -130,7 +169,7 @@ public class MainActivity extends Activity {
                         break;
                     case R.id.action_deleteserver:
                         AlertDialog.Builder myAlertDialog;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                             myAlertDialog = new AlertDialog.Builder(
                                     MainActivity.this,
                                     android.R.style.Theme_DeviceDefault_Dialog_Alert);
@@ -202,7 +241,6 @@ public class MainActivity extends Activity {
                 listView.clearChoices();
             }
         });
-
     }
 
     public void refresh() {
@@ -280,6 +318,11 @@ public class MainActivity extends Activity {
                 about.setTitle(getResources().getIdentifier("action_about", "string", getPackageName()));
                 about.show();
                 break;
+            case R.id.action_help:
+                HelpDialog help = new HelpDialog(this);
+                help.setTitle(getResources().getIdentifier("action_help", "string", getPackageName()));
+                help.show();
+                break;
             case R.id.action_addserver:
                 View promptsView = LayoutInflater.from(this).inflate(
                         R.layout.addserver_dialog, null);
@@ -344,4 +387,40 @@ public class MainActivity extends Activity {
         database.close();
         super.onPause();
     }
+
+    public String readRawTextFile(int id) {
+
+        InputStream inputStream = getApplicationContext().getResources().openRawResource(id);
+
+        InputStreamReader in = new InputStreamReader(inputStream);
+        BufferedReader buf = new BufferedReader(in);
+
+        String line;
+
+        StringBuilder text = new StringBuilder();
+        try {
+            while ((line = buf.readLine()) != null)
+                text.append(line);
+        } catch (IOException e) {
+            return null;
+        }
+
+        return text.toString();
+    }
+
+    private final ImageGetter imgGetter = new ImageGetter() {
+
+        public Drawable getDrawable(String source) {
+            Drawable drawable;
+            Log.i(TAG, "Drawable source: " + source);
+            int rid = getResources().getIdentifier(source, null, null);
+            if (rid > 0) {
+                drawable = getResources().getDrawable(rid);
+            } else {
+                drawable = getResources().getDrawable(android.R.drawable.stat_notify_error);
+            }
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+            return drawable;
+        }
+    };
 }
