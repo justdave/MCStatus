@@ -323,6 +323,11 @@ public class MainActivity extends Activity {
                 help.setTitle(getResources().getIdentifier("action_help", "string", getPackageName()));
                 help.show();
                 break;
+            case R.id.action_privacy:
+                PrivacyDialog privacy = new PrivacyDialog(this);
+                privacy.setTitle(getResources().getIdentifier("action_privacy", "string", getPackageName()));
+                privacy.show();
+                break;
             case R.id.action_addserver:
                 View promptsView = LayoutInflater.from(this).inflate(
                         R.layout.addserver_dialog, null);

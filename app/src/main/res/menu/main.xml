@@ -18,8 +18,13 @@
         android:showAsAction="never"
         android:title="@string/action_about"/>
     <item
+        android:id="@+id/action_privacy"
+        android:orderInCategory="103"
+        android:showAsAction="never"
+        android:title="@string/action_privacy"/>
+    <item
         android:id="@+id/action_help"
-        android:orderInCategory="102"
+        android:orderInCategory="104"
         android:showAsAction="never"
         android:title="@string/action_help"/>
 
