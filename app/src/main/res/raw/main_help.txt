@@ -3,10 +3,10 @@
 <br>
 <b>To edit or remove a server</b>:<br>
 <br>
-- Long touch any server to enter selection mode (the one you long-touched will be selected)<br>
+- Long touch any server to enter selection mode (the one you long-touched will be selected first)<br>
 <br>
-- Select any additional you wish to also delete (you can only select one to edit)<br>
+- Select any additional you wish to also delete by tapping it (you can only select one to edit)<br>
 <br>
-- Touch the pencil to edit, or the trash can to delete<br>
+- Tap the pencil to edit, or the trash can to delete<br>
 <br>
 You can access these instructions again by choosing <b>Help</b> from the menu.<br>
