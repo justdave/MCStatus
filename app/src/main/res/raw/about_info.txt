@@ -5,3 +5,6 @@ Copyright 2014-2020 David D. Miller<br>
 Copyright 2020 Rick van Schijndel<br>
 <br>
 Licensed under the MIT License<br>
+<br>
+Minecraft is a registered trademark of Mojang Studios and used under license<br>
+https://account.mojang.com/terms#brand<br>
