@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -34,12 +33,8 @@ public class PrivacyDialog extends Dialog {
         }
 
         Button button = findViewById(R.id.about_ok_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
- 
+        button.setOnClickListener(v -> dismiss());
+
     }
 
     public String readRawTextFile(int id) {

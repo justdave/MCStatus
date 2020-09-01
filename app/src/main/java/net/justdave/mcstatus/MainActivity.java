@@ -1,18 +1,11 @@
 package net.justdave.mcstatus;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.ListIterator;
-
-import android.os.Build;
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Bundle;
 import android.text.Html;
 import android.text.Html.ImageGetter;
 import android.text.SpannableString;
@@ -33,18 +26,36 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.graphics.drawable.Drawable;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     final private ArrayList<MinecraftServer> serverlist = new ArrayList<>();
+    private final Object refreshLock = new Object();
+    private final ImageGetter imgGetter = source -> {
+        Drawable drawable;
+        Log.i(TAG, "Drawable source: " + source);
+        int rid = getResources().getIdentifier(source, null, null);
+        if (rid > 0) {
+            drawable = getResources().getDrawable(rid);
+        } else {
+            drawable = getResources().getDrawable(android.R.drawable.stat_notify_error);
+        }
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        return drawable;
+    };
     private ServerListViewAdapter adapter;
     private ListView listView;
     private ServerDB database;
     private MenuItem refreshItem;
     private int currentlyRefreshing = 0;
-    private final Object refreshLock = new Object();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +85,13 @@ public class MainActivity extends Activity {
             /* below Nugat requires one hell of a hack of a workaround. */
             String text = readRawTextFile(R.raw.main_help);
             SpannableStringBuilder ssb = new SpannableStringBuilder();
-            int index = text.indexOf("<img") -1;
+            int index = text.indexOf("<img") - 1;
             int index2 = text.indexOf("\">") + 2;
-            SpannableString string1 = new SpannableString(Html.fromHtml(text.substring(0,index)));
+            SpannableString string1 = new SpannableString(Html.fromHtml(text.substring(0, index)));
             ImageSpan is = new ImageSpan(getApplicationContext(), android.R.drawable.ic_menu_add);
             SpannableString string2 = new SpannableString(Html.fromHtml(text.substring(index2)));
             ssb.append(string1).append(" ");
-            ssb.setSpan(is, ssb.length()-1, ssb.length(), 0);
+            ssb.setSpan(is, ssb.length() - 1, ssb.length(), 0);
             ssb.append(string2);
             helpView.setText(ssb);
         }
@@ -114,8 +125,7 @@ public class MainActivity extends Activity {
                             alertDialogBuilder = new AlertDialog.Builder(
                                     MainActivity.this,
                                     android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                        }
-                        else {
+                        } else {
                             alertDialogBuilder = new AlertDialog.Builder(
                                     MainActivity.this,
                                     AlertDialog.THEME_DEVICE_DEFAULT_DARK);
@@ -137,24 +147,16 @@ public class MainActivity extends Activity {
                                         .setCancelable(false)
                                         .setTitle("Edit Server: ".concat(thisServer.serverName()))
                                         .setPositiveButton("OK",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog,
-                                                                        int id) {
-                                                        // get user input
-                                                        database.update(thisServer.serverAddress(),
-                                                                serverAddress.getText().toString(),
-                                                                serverName.getText().toString());
-                                                        database.getAllServers(serverlist);
-                                                        refresh();
-                                                    }
+                                                (dialog, id) -> {
+                                                    // get user input
+                                                    database.update(thisServer.serverAddress(),
+                                                            serverAddress.getText().toString(),
+                                                            serverName.getText().toString());
+                                                    database.getAllServers(serverlist);
+                                                    refresh();
                                                 })
                                         .setNegativeButton("Cancel",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog,
-                                                                        int id) {
-                                                        dialog.cancel();
-                                                    }
-                                                });
+                                                (dialog, id) -> dialog.cancel());
                                 AlertDialog alertDialog = alertDialogBuilder.create();
                                 alertDialog.show();
                                 listView.setItemChecked(
@@ -171,8 +173,7 @@ public class MainActivity extends Activity {
                             myAlertDialog = new AlertDialog.Builder(
                                     MainActivity.this,
                                     android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                        }
-                        else {
+                        } else {
                             myAlertDialog = new AlertDialog.Builder(
                                     MainActivity.this,
                                     AlertDialog.THEME_DEVICE_DEFAULT_DARK);
@@ -183,41 +184,33 @@ public class MainActivity extends Activity {
                                 .setMessage(
                                         "You are about to delete the selected server(s).")
                                 .setPositiveButton("Cancel",
-                                        new DialogInterface.OnClickListener() {
-
-                                            public void onClick(
-                                                    DialogInterface arg0, int arg1) {
-                                                // do something when the Cancel
-                                                // button
-                                                // is clicked
-                                                Log.i(TAG, "Cancel picked");
-                                            }
+                                        (arg0, arg1) -> {
+                                            // do something when the Cancel
+                                            // button
+                                            // is clicked
+                                            Log.i(TAG, "Cancel picked");
                                         })
                                 .setNegativeButton("Delete",
-                                        new DialogInterface.OnClickListener() {
-
-                                            public void onClick(
-                                                    DialogInterface arg0, int arg1) {
-                                                // do something when the Delete
-                                                // button is clicked
-                                                Log.i(TAG, "Delete picked");
-                                                SparseBooleanArray selected = listView
-                                                        .getCheckedItemPositions();
-                                                for (MinecraftServer thisServer : serverlist) {
-                                                    if (selected.get(serverlist
-                                                            .indexOf(thisServer))) {
-                                                        database.delete(thisServer
-                                                                .serverAddress());
-                                                        listView.setItemChecked(
-                                                                serverlist
-                                                                        .indexOf(thisServer),
-                                                                false);
-                                                    }
+                                        (arg0, arg1) -> {
+                                            // do something when the Delete
+                                            // button is clicked
+                                            Log.i(TAG, "Delete picked");
+                                            SparseBooleanArray selected1 = listView
+                                                    .getCheckedItemPositions();
+                                            for (MinecraftServer thisServer : serverlist) {
+                                                if (selected1.get(serverlist
+                                                        .indexOf(thisServer))) {
+                                                    database.delete(thisServer
+                                                            .serverAddress());
+                                                    listView.setItemChecked(
+                                                            serverlist
+                                                                    .indexOf(thisServer),
+                                                            false);
                                                 }
-                                                database.getAllServers(serverlist);
-                                                refresh();
-                                                adapter.notifyDataSetInvalidated();
                                             }
+                                            database.getAllServers(serverlist);
+                                            refresh();
+                                            adapter.notifyDataSetInvalidated();
                                         }).create().show();
                         break;
                 }
@@ -263,31 +256,25 @@ public class MainActivity extends Activity {
         iterator = serverlist.listIterator();
         while (iterator.hasNext()) {
             final MinecraftServer mcs = iterator.next();
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (refreshLock) {
-                        currentlyRefreshing++;
-                    }
-                    mcs.query();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                            synchronized (refreshLock) {
-                                currentlyRefreshing--;
-                            }
-                            if (currentlyRefreshing == 0) {
-                                if (refreshItem != null
-                                        && refreshItem.getActionView() != null) {
-                                    refreshItem.getActionView()
-                                            .clearAnimation();
-                                    refreshItem.setActionView(null);
-                                }
-                            }
-                        }
-                    });
+            Thread thread = new Thread(() -> {
+                synchronized (refreshLock) {
+                    currentlyRefreshing++;
                 }
+                mcs.query();
+                runOnUiThread(() -> {
+                    adapter.notifyDataSetChanged();
+                    synchronized (refreshLock) {
+                        currentlyRefreshing--;
+                    }
+                    if (currentlyRefreshing == 0) {
+                        if (refreshItem != null
+                                && refreshItem.getActionView() != null) {
+                            refreshItem.getActionView()
+                                    .clearAnimation();
+                            refreshItem.setActionView(null);
+                        }
+                    }
+                });
             });
             thread.start();
         }
@@ -333,8 +320,7 @@ public class MainActivity extends Activity {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
                     alertDialogBuilder = new AlertDialog.Builder(
                             this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                }
-                else {
+                } else {
                     alertDialogBuilder = new AlertDialog.Builder(
                             this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
                 }
@@ -349,24 +335,16 @@ public class MainActivity extends Activity {
                         .setCancelable(false)
                         .setTitle("Add a Server")
                         .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int id) {
-                                        // get user input
-                                        database.create(serverName.getText()
-                                                .toString(), serverAddress
-                                                .getText().toString());
-                                        database.getAllServers(serverlist);
-                                        refresh();
-                                    }
+                                (dialog, id) -> {
+                                    // get user input
+                                    database.create(serverName.getText()
+                                            .toString(), serverAddress
+                                            .getText().toString());
+                                    database.getAllServers(serverlist);
+                                    refresh();
                                 })
                         .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int id) {
-                                        dialog.cancel();
-                                    }
-                                });
+                                (dialog, id) -> dialog.cancel());
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
                 return true;
@@ -410,20 +388,4 @@ public class MainActivity extends Activity {
 
         return text.toString();
     }
-
-    private final ImageGetter imgGetter = new ImageGetter() {
-
-        public Drawable getDrawable(String source) {
-            Drawable drawable;
-            Log.i(TAG, "Drawable source: " + source);
-            int rid = getResources().getIdentifier(source, null, null);
-            if (rid > 0) {
-                drawable = getResources().getDrawable(rid);
-            } else {
-                drawable = getResources().getDrawable(android.R.drawable.stat_notify_error);
-            }
-            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-            return drawable;
-        }
-    };
 }
