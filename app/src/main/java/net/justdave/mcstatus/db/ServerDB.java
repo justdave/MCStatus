@@ -14,11 +14,11 @@ import java.util.ArrayList;
 
 public class ServerDB {
     private static final String TAG = ServerDB.class.getSimpleName();
-    final private ServerListHelper dbHelper;
+    final private Database dbHelper;
     private SQLiteDatabase database;
 
     public ServerDB(Context context) {
-        dbHelper = new ServerListHelper(context);
+        dbHelper = new Database(context);
     }
 
     public void open() throws SQLException {
