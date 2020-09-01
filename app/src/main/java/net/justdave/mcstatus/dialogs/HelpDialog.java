@@ -1,4 +1,4 @@
-package net.justdave.mcstatus;
+package net.justdave.mcstatus.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.text.style.ImageSpan;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+
+import net.justdave.mcstatus.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;

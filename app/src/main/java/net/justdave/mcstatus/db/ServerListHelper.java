@@ -1,16 +1,16 @@
-package net.justdave.mcstatus;
+package net.justdave.mcstatus.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class Database extends SQLiteOpenHelper {
+public class ServerListHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "serverlist.db";
     private static final int DATABASE_VERSION = 1;
 
-    public Database(Context context) {
+    public ServerListHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -25,7 +25,7 @@ public class Database extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(Database.class.getName(), "Upgrading database from version "
+        Log.w(ServerListHelper.class.getName(), "Upgrading database from version "
                 + oldVersion + " to " + newVersion
                 + ", which will destroy all old data");
         // if we ever actually upgrade the schema, we can do stuff here instead

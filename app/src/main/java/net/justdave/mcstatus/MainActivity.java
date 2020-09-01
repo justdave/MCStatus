@@ -27,6 +27,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import net.justdave.mcstatus.db.ServerDB;
+import net.justdave.mcstatus.dialogs.AboutDialog;
+import net.justdave.mcstatus.dialogs.HelpDialog;
+import net.justdave.mcstatus.dialogs.PrivacyDialog;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,17 +58,17 @@ public class MainActivity extends Activity {
     };
     private ServerListViewAdapter adapter;
     private ListView listView;
-    private ServerDB database;
+    private ServerDB serverDB;
     private MenuItem refreshItem;
     private int currentlyRefreshing = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        database = new ServerDB(this);
-        database.open();
+        serverDB = new ServerDB(this);
+        serverDB.open();
 
-        database.getAllServers(serverlist);
+        serverDB.getAllServers(serverlist);
         adapter = new ServerListViewAdapter(getApplicationContext(), serverlist);
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.server_list);
@@ -149,10 +154,10 @@ public class MainActivity extends Activity {
                                         .setPositiveButton("OK",
                                                 (dialog, id) -> {
                                                     // get user input
-                                                    database.update(thisServer.serverAddress(),
+                                                    serverDB.update(thisServer.serverAddress(),
                                                             serverAddress.getText().toString(),
                                                             serverName.getText().toString());
-                                                    database.getAllServers(serverlist);
+                                                    serverDB.getAllServers(serverlist);
                                                     refresh();
                                                 })
                                         .setNegativeButton("Cancel",
@@ -200,7 +205,7 @@ public class MainActivity extends Activity {
                                             for (MinecraftServer thisServer : serverlist) {
                                                 if (selected1.get(serverlist
                                                         .indexOf(thisServer))) {
-                                                    database.delete(thisServer
+                                                    serverDB.delete(thisServer
                                                             .serverAddress());
                                                     listView.setItemChecked(
                                                             serverlist
@@ -208,7 +213,7 @@ public class MainActivity extends Activity {
                                                             false);
                                                 }
                                             }
-                                            database.getAllServers(serverlist);
+                                            serverDB.getAllServers(serverlist);
                                             refresh();
                                             adapter.notifyDataSetInvalidated();
                                         }).create().show();
@@ -337,10 +342,10 @@ public class MainActivity extends Activity {
                         .setPositiveButton("OK",
                                 (dialog, id) -> {
                                     // get user input
-                                    database.create(serverName.getText()
+                                    serverDB.create(serverName.getText()
                                             .toString(), serverAddress
                                             .getText().toString());
-                                    database.getAllServers(serverlist);
+                                    serverDB.getAllServers(serverlist);
                                     refresh();
                                 })
                         .setNegativeButton("Cancel",
@@ -358,14 +363,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
 //        Log.i(TAG, "onResume() called");
-        database.open();
+        serverDB.open();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
 //        Log.i(TAG, "onPause() called");
-        database.close();
+        serverDB.close();
         super.onPause();
     }
 

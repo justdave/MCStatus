@@ -1,4 +1,4 @@
-package net.justdave.mcstatus;
+package net.justdave.mcstatus.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -13,10 +13,13 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import net.justdave.mcstatus.R;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Locale;
 
 public class AboutDialog extends Dialog {
     private static final String TAG = AboutDialog.class.getSimpleName();
@@ -36,9 +39,17 @@ public class AboutDialog extends Dialog {
         int vCode = 0;
         TextView tv = findViewById(R.id.info_text);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info), Html.FROM_HTML_MODE_LEGACY));
+            if (Locale.getDefault().getLanguage().equals("de")) {
+                tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info_de), Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info_en), Html.FROM_HTML_MODE_LEGACY));
+            }
         } else {
-            tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info)));
+            if (Locale.getDefault().getLanguage().equals("de")) {
+                tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info_de)));
+            } else {
+                tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info_en)));
+            }
         }
         tv.setLinkTextColor(Color.BLUE);
         Linkify.addLinks(tv, Linkify.ALL);
