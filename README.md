@@ -17,4 +17,4 @@ If you want to help, please do. :-)  Pull requests welcome.
 
 Click on "releases" at the right sidebar of the Github page for downloads.
 
-https://github.com/justdave/MCStatus
+https://github.com/justdave/MCStatus/releases
