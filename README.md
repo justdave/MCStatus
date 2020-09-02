@@ -3,7 +3,7 @@ MCStatus
 
 Android app to monitor the status of Minecraft servers
 
-The MinecraftServer class is intended to be able to be used standalone if you wanted to include it in something else to use it to query the server.  Although not quite a direct port, most of the process was taken from https://github.com/xPaw/PHP-Minecraft-Query/blob/master/src/MinecraftPing.php . I wrote this because I couldn't find any open source solutions for this problem on Android, although several proprietary ones apparently exist with unresponsive developers.
+The MinecraftServer class is intended to be able to be used standalone if you wanted to include it in something else to use it to query the server.  Although not quite a direct port, most of the process was taken from https://github.com/xPaw/PHP-Minecraft-Query/tree/master/src . I wrote this because I couldn't find any open source solutions for this problem on Android, although several proprietary ones apparently exist with unresponsive developers.
 
 Pretty sure this currently only works on version 1.7 and newer servers.
 
