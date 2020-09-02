@@ -15,6 +15,6 @@ Features:
 Right now you have to manually refresh (it'll also refresh if you close and reopen the app, and if you rotate the screen).  Eventually I want it to periodically update while the app it open (preference for how frequently perhaps?), and perhaps even check in the background and do notifications if someone connects, etc.
 If you want to help, please do. :-)  Pull requests welcome.
 
-Click on "releases" at the right sidebar of the Github page for downloads.
+Click on "releases" at the right sidebar of the Github page for downloads or click this link.
 
 https://github.com/justdave/MCStatus/releases
