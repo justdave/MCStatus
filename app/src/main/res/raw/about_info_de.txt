@@ -3,6 +3,7 @@ Sie haben einen Fehler gefunden oder haben eine Idee für die App<br>
 <br>
 Copyright 2014-2020 David D. Miller<br>
 Copyright 2020 Rick van Schijndel<br>
+Copyright 2020 Yan-Luca Lentzen<br>
 <br>
 Lizensiert unter der MIT Lizenz<br>
 <br>
