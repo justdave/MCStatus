@@ -313,7 +313,8 @@ public class MinecraftServer {
             setDescription("Error: Lookup failed: Unknown host");
             return;
         } catch (IllegalArgumentException | IOException e) {
-            setDescription("Error: " + e.getLocalizedMessage());
+            setDescription("Server is offline or Query is disabled");
+            // setDescription("Error: " + e.getLocalizedMessage());
             return;
         }
         // See http://wiki.vg/Protocol (Status Ping)
