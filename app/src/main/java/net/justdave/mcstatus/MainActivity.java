@@ -3,6 +3,7 @@ package net.justdave.mcstatus;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -303,6 +304,10 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem menuitem) {
         switch (menuitem.getItemId()) {
+            case R.id.action_settings:
+                Intent settings = new Intent(this, SettingsActivity.class);
+                startActivity(settings);
+                break;
             case R.id.action_about:
                 AboutDialog about = new AboutDialog(this);
                 about.setTitle(getResources().getIdentifier("action_about", "string", getPackageName()));
