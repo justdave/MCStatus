@@ -3,29 +3,34 @@
     <item
         android:id="@+id/action_refresh"
         android:icon="@android:drawable/ic_popup_sync"
-        android:orderInCategory="101"
+        android:orderInCategory="100"
         android:showAsAction="ifRoom"
-        android:title="@string/action_refresh"/>
+        android:title="@string/action_refresh" />
     <item
         android:id="@+id/action_addserver"
         android:icon="@android:drawable/ic_menu_add"
         android:orderInCategory="101"
         android:showAsAction="ifRoom"
-        android:title="@string/action_addserver"/>
+        android:title="@string/action_addserver" />
     <item
-        android:id="@+id/action_about"
+        android:id="@+id/action_settings"
         android:orderInCategory="102"
         android:showAsAction="never"
-        android:title="@string/action_about"/>
+        android:title="@string/action_settings" />
     <item
-        android:id="@+id/action_privacy"
+        android:id="@+id/action_about"
         android:orderInCategory="103"
         android:showAsAction="never"
-        android:title="@string/action_privacy"/>
+        android:title="@string/action_about" />
     <item
-        android:id="@+id/action_help"
+        android:id="@+id/action_privacy"
         android:orderInCategory="104"
         android:showAsAction="never"
-        android:title="@string/action_help"/>
+        android:title="@string/action_privacy" />
+    <item
+        android:id="@+id/action_help"
+        android:orderInCategory="105"
+        android:showAsAction="never"
+        android:title="@string/action_help" />
 
 </menu>

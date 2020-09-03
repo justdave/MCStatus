@@ -7,6 +7,7 @@
     <string name="action_addserver">Add Server</string>
     <string name="action_deleteserver">Delete Server(s)</string>
     <string name="action_editserver">Edit Server</string>
+    <string name="action_settings">Settings</string>
     <string name="action_about">About This App</string>
     <string name="action_help">Help</string>
     <string name="action_privacy">Privacy</string>
