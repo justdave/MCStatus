@@ -20,6 +20,6 @@
     <string name="userlist_header">Users online:</string>
     <string name="icon">Icon</string>
     <string name="ok">OK</string>
-    <string name="hello_guy">Hello Guy</string>
+    <string name="human__messages">Human Messsages</string>
 
 </resources>
