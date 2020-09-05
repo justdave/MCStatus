@@ -3,4 +3,6 @@ dist: trusty
 android:
     components:
         - build-tools-29.0.3
+        - build-tools-30.0.2
         - android-29
+        - android-30
