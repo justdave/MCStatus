@@ -14,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Locale;
 
 public class PrivacyDialog extends Dialog {
     private final Context mContext;
@@ -30,21 +29,9 @@ public class PrivacyDialog extends Dialog {
 
         TextView tv = findViewById(R.id.info_text);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (Locale.getDefault().getLanguage().equals("de")) {
-                // TODO: German Translation
-                // tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info_de), Html.FROM_HTML_MODE_LEGACY));
-                tv.setText(Html.fromHtml(readRawTextFile(R.raw.privacy_en), Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                tv.setText(Html.fromHtml(readRawTextFile(R.raw.privacy_en), Html.FROM_HTML_MODE_LEGACY));
-            }
+            tv.setText(Html.fromHtml(readRawTextFile(R.raw.privacy), Html.FROM_HTML_MODE_LEGACY));
         } else {
-            if (Locale.getDefault().getLanguage().equals("de")) {
-                // TODO: German Translation
-                // tv.setText(Html.fromHtml(readRawTextFile(R.raw.about_info_de)));
-                tv.setText(Html.fromHtml(readRawTextFile(R.raw.privacy_en)));
-            } else {
-                tv.setText(Html.fromHtml(readRawTextFile(R.raw.privacy_en)));
-            }
+            tv.setText(Html.fromHtml(readRawTextFile(R.raw.privacy)));
         }
 
         Button button = findViewById(R.id.about_ok_button);
