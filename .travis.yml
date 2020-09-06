@@ -6,3 +6,6 @@ android:
         - build-tools-30.0.2
         - android-29
         - android-30
+    licenses:
+        - android-sdk-.+
+        - google-sdk-.+
