@@ -2,7 +2,7 @@ language: android
 dist: trusty
 android:
     components:
-        - platform-tools
+        - platform-tools-30.0.4
         - build-tools-30.0.2
         - android-30
     licenses:
