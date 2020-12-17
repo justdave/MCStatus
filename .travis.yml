@@ -1,8 +1,28 @@
 language: android
+os: linux
 dist: trusty
+jdk:
+  - oraclejdk8
+
+notifications:
+  email: null
+
+env:
+ global:
+ - ANDROID_API=30
+ - ANDROID_BUILD_TOOLS=30.0.2
+
 android:
-    components:
-        - build-tools-29.0.3
-        - build-tools-30.0.2
-        - android-29
-        - android-30
+  components:
+  - tools
+  - tools # Running this twice get's the latest build tools (https://github.com/codepath/android_guides/wiki/Setting-up-Travis-CI)
+  - platform-tools
+  - build-tools-${ANDROID_BUILD_TOOLS}
+  - android-${ANDROID_API}
+
+before_install:
+  - echo yes | sdkmanager "platforms;android-${ANDROID_API}"
+
+script:
+  - "./gradlew clean test build"
+
