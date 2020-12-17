@@ -10,7 +10,7 @@ notifications:
 env:
  global:
  - ANDROID_API=30
- - ANDROID_BUILD_TOOLS=30.0.2
+ - ANDROID_BUILD_TOOLS=30.0.3
 
 android:
   components:
