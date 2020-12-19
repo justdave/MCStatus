@@ -1,4 +1,4 @@
-package net.justdave.mcstatus;
+package net.justdave.mcstatus.db;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import net.justdave.mcstatus.MinecraftServer;
 
 public class ServerDB {
 	private static final String TAG = ServerDB.class.getSimpleName();

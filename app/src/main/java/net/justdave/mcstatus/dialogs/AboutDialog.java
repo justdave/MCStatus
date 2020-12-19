@@ -1,4 +1,4 @@
-package net.justdave.mcstatus;
+package net.justdave.mcstatus.dialogs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +18,8 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import net.justdave.mcstatus.R;
 
 public class AboutDialog extends Dialog {
     private final Context mContext;

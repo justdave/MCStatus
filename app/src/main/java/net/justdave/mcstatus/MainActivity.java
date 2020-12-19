@@ -35,6 +35,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 
+import net.justdave.mcstatus.db.ServerDB;
+import net.justdave.mcstatus.dialogs.AboutDialog;
+import net.justdave.mcstatus.dialogs.HelpDialog;
+import net.justdave.mcstatus.dialogs.PrivacyDialog;
+
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
