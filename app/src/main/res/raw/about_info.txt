@@ -3,6 +3,7 @@ To request new features or file bug reports, please visit<br>
 <br>
 Copyright 2014-2020 David D. Miller<br>
 Copyright 2020 Rick van Schijndel<br>
+Copyright 2020 Yan-Luca Lentzen<br>
 <br>
 Licensed under the MIT License<br>
 <br>
