@@ -1,0 +1,9 @@
+<b>MCStatus Privacy Info</b><br>
+<br>
+MCStatus sammelt keine persönlichen Informationen von dir oder deinem Gerät.<br>
+<br>
+Server die du zur Liste hinzufügst wissen mit welcher IP du dich verbindest (das selbe wie beim Besuchen eine Webseite).<br>
+<br>
+<b>Third Party Content Notice</b><br>
+<br>
+MCStatus zeigt die Informationen an die der Server mitteilt. MCStatus hat keine Kontrolle über den Inhalt des Name, der Beschreibung oder der Spielername der Spieler auf dem Server und übernimmt keine Verantwortung für die Eignung dieses Inhalts für ein bestimmtes Publikum.<br>
