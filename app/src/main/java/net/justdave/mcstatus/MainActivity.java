@@ -1,17 +1,11 @@
 package net.justdave.mcstatus;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.ListIterator;
-
-import android.os.Build;
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Bundle;
 import android.text.Html;
 import android.text.Html.ImageGetter;
 import android.text.SpannableString;
@@ -32,23 +26,41 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.graphics.drawable.Drawable;
 
 import net.justdave.mcstatus.db.ServerDB;
 import net.justdave.mcstatus.dialogs.AboutDialog;
 import net.justdave.mcstatus.dialogs.HelpDialog;
 import net.justdave.mcstatus.dialogs.PrivacyDialog;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.ListIterator;
+
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    final private ArrayList<MinecraftServer> serverlist = new ArrayList<>();
+    private final ArrayList<MinecraftServer> serverlist = new ArrayList<>();
+    private final Object refreshLock = new Object();
+    private final ImageGetter imgGetter = source -> {
+        Drawable drawable;
+        Log.i(TAG, "Drawable source: " + source);
+        int rid = getResources().getIdentifier(source, null, null);
+        if (rid > 0) {
+            drawable = getResources().getDrawable(rid);
+        } else {
+            drawable = getResources().getDrawable(android.R.drawable.stat_notify_error);
+        }
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        return drawable;
+    };
     private ServerListViewAdapter adapter;
     private ListView listView;
     private ServerDB database;
     private MenuItem refreshItem;
     private int currentlyRefreshing = 0;
-    private final Object refreshLock = new Object();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +130,7 @@ public class MainActivity extends Activity {
                             alertDialogBuilder = new AlertDialog.Builder(
                                     MainActivity.this,
                                     android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                        }
-                        else {
+                        } else {
                             alertDialogBuilder = new AlertDialog.Builder(
                                     MainActivity.this,
                                     AlertDialog.THEME_DEVICE_DEFAULT_DARK);
@@ -167,8 +178,7 @@ public class MainActivity extends Activity {
                             myAlertDialog = new AlertDialog.Builder(
                                     MainActivity.this,
                                     android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                        }
-                        else {
+                        } else {
                             myAlertDialog = new AlertDialog.Builder(
                                     MainActivity.this,
                                     AlertDialog.THEME_DEVICE_DEFAULT_DARK);
@@ -315,8 +325,7 @@ public class MainActivity extends Activity {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
                     alertDialogBuilder = new AlertDialog.Builder(
                             this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                }
-                else {
+                } else {
                     alertDialogBuilder = new AlertDialog.Builder(
                             this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
                 }
@@ -384,17 +393,4 @@ public class MainActivity extends Activity {
 
         return text.toString();
     }
-
-    private final ImageGetter imgGetter = source -> {
-        Drawable drawable;
-        Log.i(TAG, "Drawable source: " + source);
-        int rid = getResources().getIdentifier(source, null, null);
-        if (rid > 0) {
-            drawable = getResources().getDrawable(rid);
-        } else {
-            drawable = getResources().getDrawable(android.R.drawable.stat_notify_error);
-        }
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        return drawable;
-    };
 }

@@ -4,6 +4,15 @@
 
 package net.justdave.mcstatus;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,15 +22,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
-import android.util.Log;
 
 public class MinecraftServer {
 	private static final String TAG = MinecraftServer.class.getSimpleName();
@@ -45,6 +45,14 @@ public class MinecraftServer {
 			queryPort = uri.getPort();
 		}
 		setDescription("Loading...");
+	}
+
+	private static int getPowerOfTwoForSampleRatio(double ratio) {
+		int k = Integer.highestOneBit((int) Math.floor(ratio));
+		if (k == 0)
+			return 1;
+		else
+			return k;
 	}
 
 	public void setDescription(String msg) {
@@ -305,7 +313,8 @@ public class MinecraftServer {
 			setDescription("Error: Lookup failed: Unknown host");
 			return;
 		} catch (IllegalArgumentException | IOException e) {
-			setDescription("Error: " + e.getLocalizedMessage());
+			setDescription("Server is offline or Query is disabled");
+			//setDescription("Error: " + e.getLocalizedMessage());
 			return;
 		}
 		// See http://wiki.vg/Protocol (Status Ping)
@@ -426,13 +435,5 @@ public class MinecraftServer {
 		bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;// optional
 		return BitmapFactory.decodeByteArray(imageData, 0,
 				imageData.length, bitmapOptions);
-	}
-
-	private static int getPowerOfTwoForSampleRatio(double ratio) {
-		int k = Integer.highestOneBit((int) Math.floor(ratio));
-		if (k == 0)
-			return 1;
-		else
-			return k;
 	}
 }
