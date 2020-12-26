@@ -1,18 +1,11 @@
 package net.justdave.mcstatus;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.ListIterator;
-
-import android.os.Build;
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Bundle;
 import android.text.Html;
 import android.text.Html.ImageGetter;
 import android.text.SpannableString;
@@ -33,18 +26,41 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.graphics.drawable.Drawable;
+
+import net.justdave.mcstatus.db.ServerDB;
+import net.justdave.mcstatus.dialogs.AboutDialog;
+import net.justdave.mcstatus.dialogs.HelpDialog;
+import net.justdave.mcstatus.dialogs.PrivacyDialog;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    final private ArrayList<MinecraftServer> serverlist = new ArrayList<>();
+    private final ArrayList<MinecraftServer> serverlist = new ArrayList<>();
+    private final Object refreshLock = new Object();
+    private final ImageGetter imgGetter = source -> {
+        Drawable drawable;
+        Log.i(TAG, "Drawable source: " + source);
+        int rid = getResources().getIdentifier(source, null, null);
+        if (rid > 0) {
+            drawable = getResources().getDrawable(rid);
+        } else {
+            drawable = getResources().getDrawable(android.R.drawable.stat_notify_error);
+        }
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        return drawable;
+    };
     private ServerListViewAdapter adapter;
     private ListView listView;
     private ServerDB database;
     private MenuItem refreshItem;
     private int currentlyRefreshing = 0;
-    private final Object refreshLock = new Object();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,122 +120,101 @@ public class MainActivity extends Activity {
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_editserver:
-                        Log.i(TAG, "EDIT selection:");
-                        @SuppressLint("InflateParams") View promptsView = LayoutInflater.from(MainActivity.this).inflate(
-                                R.layout.addserver_dialog, null);
-                        AlertDialog.Builder alertDialogBuilder;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                            alertDialogBuilder = new AlertDialog.Builder(
-                                    MainActivity.this,
-                                    android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                        }
-                        else {
-                            alertDialogBuilder = new AlertDialog.Builder(
-                                    MainActivity.this,
-                                    AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-                        }
-                        alertDialogBuilder.setView(promptsView);
+                int itemId = item.getItemId();
+                if (itemId == R.id.action_editserver) {
+                    Log.i(TAG, "EDIT selection:");
+                    @SuppressLint("InflateParams") View promptsView = LayoutInflater.from(MainActivity.this).inflate(
+                            R.layout.addserver_dialog, null);
+                    AlertDialog.Builder alertDialogBuilder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        alertDialogBuilder = new AlertDialog.Builder(
+                                MainActivity.this,
+                                android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                    } else {
+                        alertDialogBuilder = new AlertDialog.Builder(
+                                MainActivity.this,
+                                AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                    }
+                    alertDialogBuilder.setView(promptsView);
 
-                        final EditText serverName = promptsView
-                                .findViewById(R.id.edit_server_name);
-                        final EditText serverAddress = promptsView
-                                .findViewById(R.id.edit_server_address);
-                        SparseBooleanArray selected = listView
-                                .getCheckedItemPositions();
-                        for (final MinecraftServer thisServer : serverlist) {
-                            if (selected.get(serverlist
-                                    .indexOf(thisServer))) {
-                                serverName.setText(thisServer.serverName());
-                                serverAddress.setText(thisServer.serverAddress());
-                                alertDialogBuilder
-                                        .setCancelable(false)
-                                        .setTitle("Edit Server: ".concat(thisServer.serverName()))
-                                        .setPositiveButton("OK",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog,
-                                                                        int id) {
-                                                        // get user input
-                                                        database.update(thisServer.serverAddress(),
-                                                                serverAddress.getText().toString(),
-                                                                serverName.getText().toString());
-                                                        database.getAllServers(serverlist);
-                                                        refresh();
-                                                    }
-                                                })
-                                        .setNegativeButton("Cancel",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog,
-                                                                        int id) {
-                                                        dialog.cancel();
-                                                    }
-                                                });
-                                AlertDialog alertDialog = alertDialogBuilder.create();
-                                alertDialog.show();
-                                listView.setItemChecked(
-                                        serverlist
-                                                .indexOf(thisServer),
-                                        false);
-                            }
-                        }
-
-                        break;
-                    case R.id.action_deleteserver:
-                        AlertDialog.Builder myAlertDialog;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                            myAlertDialog = new AlertDialog.Builder(
-                                    MainActivity.this,
-                                    android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                        }
-                        else {
-                            myAlertDialog = new AlertDialog.Builder(
-                                    MainActivity.this,
-                                    AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-                        }
-                        myAlertDialog
-                                .setCancelable(false)
-                                .setTitle("Delete Server(s)")
-                                .setMessage(
-                                        "You are about to delete the selected server(s).")
-                                .setPositiveButton("Cancel",
-                                        new DialogInterface.OnClickListener() {
-
-                                            public void onClick(
-                                                    DialogInterface arg0, int arg1) {
-                                                // do something when the Cancel
-                                                // button
-                                                // is clicked
-                                                Log.i(TAG, "Cancel picked");
-                                            }
-                                        })
-                                .setNegativeButton("Delete",
-                                        new DialogInterface.OnClickListener() {
-
-                                            public void onClick(
-                                                    DialogInterface arg0, int arg1) {
-                                                // do something when the Delete
-                                                // button is clicked
-                                                Log.i(TAG, "Delete picked");
-                                                SparseBooleanArray selected = listView
-                                                        .getCheckedItemPositions();
-                                                for (MinecraftServer thisServer : serverlist) {
-                                                    if (selected.get(serverlist
-                                                            .indexOf(thisServer))) {
-                                                        database.delete(thisServer
-                                                                .serverAddress());
-                                                        listView.setItemChecked(
-                                                                serverlist
-                                                                        .indexOf(thisServer),
-                                                                false);
-                                                    }
-                                                }
+                    final EditText serverName = promptsView
+                            .findViewById(R.id.edit_server_name);
+                    final EditText serverAddress = promptsView
+                            .findViewById(R.id.edit_server_address);
+                    SparseBooleanArray selected = listView
+                            .getCheckedItemPositions();
+                    for (final MinecraftServer thisServer : serverlist) {
+                        if (selected.get(serverlist
+                                .indexOf(thisServer))) {
+                            serverName.setText(thisServer.serverName());
+                            serverAddress.setText(thisServer.serverAddress());
+                            alertDialogBuilder
+                                    .setCancelable(false)
+                                    .setTitle("Edit Server: ".concat(thisServer.serverName()))
+                                    .setPositiveButton("OK",
+                                            (dialog, id) -> {
+                                                // get user input
+                                                database.update(thisServer.serverAddress(),
+                                                        serverAddress.getText().toString(),
+                                                        serverName.getText().toString());
                                                 database.getAllServers(serverlist);
                                                 refresh();
-                                                adapter.notifyDataSetInvalidated();
+                                            })
+                                    .setNegativeButton("Cancel",
+                                            (dialog, id) -> dialog.cancel());
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+                            listView.setItemChecked(
+                                    serverlist
+                                            .indexOf(thisServer),
+                                    false);
+                        }
+                    }
+                } else if (itemId == R.id.action_deleteserver) {
+                    AlertDialog.Builder myAlertDialog;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        myAlertDialog = new AlertDialog.Builder(
+                                MainActivity.this,
+                                android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                    } else {
+                        myAlertDialog = new AlertDialog.Builder(
+                                MainActivity.this,
+                                AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                    }
+                    myAlertDialog
+                            .setCancelable(false)
+                            .setTitle("Delete Server(s)")
+                            .setMessage(
+                                    "You are about to delete the selected server(s).")
+                            .setPositiveButton("Cancel",
+                                    (arg0, arg1) -> {
+                                        // do something when the Cancel
+                                        // button
+                                        // is clicked
+                                        Log.i(TAG, "Cancel picked");
+                                    })
+                            .setNegativeButton("Delete",
+                                    (arg0, arg1) -> {
+                                        // do something when the Delete
+                                        // button is clicked
+                                        Log.i(TAG, "Delete picked");
+                                        SparseBooleanArray selected1 = listView
+                                                .getCheckedItemPositions();
+                                        for (MinecraftServer thisServer : serverlist) {
+                                            if (selected1.get(serverlist
+                                                    .indexOf(thisServer))) {
+                                                database.delete(thisServer
+                                                        .serverAddress());
+                                                listView.setItemChecked(
+                                                        serverlist
+                                                                .indexOf(thisServer),
+                                                        false);
                                             }
-                                        }).create().show();
-                        break;
+                                        }
+                                        database.getAllServers(serverlist);
+                                        refresh();
+                                        adapter.notifyDataSetInvalidated();
+                                    }).create().show();
                 }
                 return false;
             }
@@ -263,31 +258,25 @@ public class MainActivity extends Activity {
         iterator = serverlist.listIterator();
         while (iterator.hasNext()) {
             final MinecraftServer mcs = iterator.next();
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (refreshLock) {
-                        currentlyRefreshing++;
-                    }
-                    mcs.query();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                            synchronized (refreshLock) {
-                                currentlyRefreshing--;
-                            }
-                            if (currentlyRefreshing == 0) {
-                                if (refreshItem != null
-                                        && refreshItem.getActionView() != null) {
-                                    refreshItem.getActionView()
-                                            .clearAnimation();
-                                    refreshItem.setActionView(null);
-                                }
-                            }
-                        }
-                    });
+            Thread thread = new Thread(() -> {
+                synchronized (refreshLock) {
+                    currentlyRefreshing++;
                 }
+                mcs.query();
+                runOnUiThread(() -> {
+                    adapter.notifyDataSetChanged();
+                    synchronized (refreshLock) {
+                        currentlyRefreshing--;
+                    }
+                    if (currentlyRefreshing == 0) {
+                        if (refreshItem != null
+                                && refreshItem.getActionView() != null) {
+                            refreshItem.getActionView()
+                                    .clearAnimation();
+                            refreshItem.setActionView(null);
+                        }
+                    }
+                });
             });
             thread.start();
         }
@@ -310,69 +299,57 @@ public class MainActivity extends Activity {
     @SuppressLint("InflateParams")
     @Override
     public boolean onOptionsItemSelected(MenuItem menuitem) {
-        switch (menuitem.getItemId()) {
-            case R.id.action_about:
-                AboutDialog about = new AboutDialog(this);
-                about.setTitle(getResources().getIdentifier("action_about", "string", getPackageName()));
-                about.show();
-                break;
-            case R.id.action_help:
-                HelpDialog help = new HelpDialog(this);
-                help.setTitle(getResources().getIdentifier("action_help", "string", getPackageName()));
-                help.show();
-                break;
-            case R.id.action_privacy:
-                PrivacyDialog privacy = new PrivacyDialog(this);
-                privacy.setTitle(getResources().getIdentifier("action_privacy", "string", getPackageName()));
-                privacy.show();
-                break;
-            case R.id.action_addserver:
-                View promptsView = LayoutInflater.from(this).inflate(
-                        R.layout.addserver_dialog, null);
-                AlertDialog.Builder alertDialogBuilder;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    alertDialogBuilder = new AlertDialog.Builder(
-                            this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-                }
-                else {
-                    alertDialogBuilder = new AlertDialog.Builder(
-                            this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
-                }
-                alertDialogBuilder.setView(promptsView);
+        int itemId = menuitem.getItemId();
+        if (itemId == R.id.action_about) {
+            AboutDialog about = new AboutDialog(this);
+            about.setTitle(getResources().getIdentifier("action_about", "string", getPackageName()));
+            about.show();
+        } else if (itemId == R.id.action_help) {
+            HelpDialog help = new HelpDialog(this);
+            help.setTitle(getResources().getIdentifier("action_help", "string", getPackageName()));
+            help.show();
+        } else if (itemId == R.id.action_privacy) {
+            PrivacyDialog privacy = new PrivacyDialog(this);
+            privacy.setTitle(getResources().getIdentifier("action_privacy", "string", getPackageName()));
+            privacy.show();
+        } else if (itemId == R.id.action_addserver) {
+            View promptsView = LayoutInflater.from(this).inflate(
+                    R.layout.addserver_dialog, null);
+            AlertDialog.Builder alertDialogBuilder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                alertDialogBuilder = new AlertDialog.Builder(
+                        this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+            } else {
+                alertDialogBuilder = new AlertDialog.Builder(
+                        this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+            }
+            alertDialogBuilder.setView(promptsView);
 
-                final EditText serverName = promptsView
-                        .findViewById(R.id.edit_server_name);
-                final EditText serverAddress = promptsView
-                        .findViewById(R.id.edit_server_address);
+            final EditText serverName = promptsView
+                    .findViewById(R.id.edit_server_name);
+            final EditText serverAddress = promptsView
+                    .findViewById(R.id.edit_server_address);
 
-                alertDialogBuilder
-                        .setCancelable(false)
-                        .setTitle("Add a Server")
-                        .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int id) {
-                                        // get user input
-                                        database.create(serverName.getText()
-                                                .toString(), serverAddress
-                                                .getText().toString());
-                                        database.getAllServers(serverlist);
-                                        refresh();
-                                    }
-                                })
-                        .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-                return true;
-            case R.id.action_refresh:
-                refresh();
-                return true;
+            alertDialogBuilder
+                    .setCancelable(false)
+                    .setTitle("Add a Server")
+                    .setPositiveButton("OK",
+                            (dialog, id) -> {
+                                // get user input
+                                database.create(serverName.getText()
+                                        .toString(), serverAddress
+                                        .getText().toString());
+                                database.getAllServers(serverlist);
+                                refresh();
+                            })
+                    .setNegativeButton("Cancel",
+                            (dialog, id) -> dialog.cancel());
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+            return true;
+        } else if (itemId == R.id.action_refresh) {
+            refresh();
+            return true;
         }
         return false;
     }
@@ -410,20 +387,4 @@ public class MainActivity extends Activity {
 
         return text.toString();
     }
-
-    private final ImageGetter imgGetter = new ImageGetter() {
-
-        public Drawable getDrawable(String source) {
-            Drawable drawable;
-            Log.i(TAG, "Drawable source: " + source);
-            int rid = getResources().getIdentifier(source, null, null);
-            if (rid > 0) {
-                drawable = getResources().getDrawable(rid);
-            } else {
-                drawable = getResources().getDrawable(android.R.drawable.stat_notify_error);
-            }
-            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-            return drawable;
-        }
-    };
 }

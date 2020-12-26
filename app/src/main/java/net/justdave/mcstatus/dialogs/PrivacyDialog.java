@@ -1,13 +1,14 @@
-package net.justdave.mcstatus;
+package net.justdave.mcstatus.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import net.justdave.mcstatus.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,11 +35,7 @@ public class PrivacyDialog extends Dialog {
         }
 
         Button button = findViewById(R.id.about_ok_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        button.setOnClickListener(v -> dismiss());
  
     }
 

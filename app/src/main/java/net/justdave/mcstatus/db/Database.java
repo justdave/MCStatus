@@ -1,4 +1,4 @@
-package net.justdave.mcstatus;
+package net.justdave.mcstatus.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
