@@ -1,7 +1,4 @@
-package net.justdave.mcstatus;
-
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+package net.justdave.mcstatus.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,10 +7,15 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import net.justdave.mcstatus.MinecraftServer;
+
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+
 public class ServerDB {
 	private static final String TAG = ServerDB.class.getSimpleName();
-	private SQLiteDatabase database;
 	final private Database dbHelper;
+	private SQLiteDatabase database;
 
 	public ServerDB(Context context) {
 		dbHelper = new Database(context);

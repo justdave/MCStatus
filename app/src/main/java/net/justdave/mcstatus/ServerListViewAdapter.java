@@ -1,9 +1,5 @@
 package net.justdave.mcstatus;
 
-import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.Locale;
-
 import android.R.color;
 import android.content.Context;
 import android.graphics.Color;
@@ -21,6 +17,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.ListIterator;
+import java.util.Locale;
 
 public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		implements View.OnLongClickListener, View.OnClickListener {
@@ -43,7 +43,8 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		listView = mView;
 	}
 
-	@Override @NonNull
+	@Override
+	@NonNull
 	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 //		Log.i(TAG, "getView(".concat(Integer.toString(position)).concat(")"));
 		LayoutInflater inflater = (LayoutInflater) context
