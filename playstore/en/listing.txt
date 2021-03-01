@@ -1,0 +1,28 @@
+<short_description>
+Tool for server admins to monitor status of Minecraft servers (not a chat app)
+</short_description>
+<full_description>
+This app lets you quickly view the status of your favorite multiplayer Minecraft servers without having to fire up the full Minecraft application on your desktop.
+
+NOTE: This is NOT a Minecraft game.  This is NOT a chat app.  This is a tool for monitoring Minecraft servers, you still need to use your normal client or MineChat or similar to actually connect to the server.
+
+Features:
+
+* Add, remove, and edit servers in the list of servers to check (tap and hold on a server to open the editing action bar)
+* Displays the following information about each server in the list:
+* - The server's favicon
+* - The server's MOTD (message of the day)
+* - How many users are connected, and how many it maxes out at
+* - The version of Minecraft being run by the server
+* - If supplied by the server, the usernames of connected users (or a sampling of them on larger servers)
+
+It probably only works on servers running Minecraft 1.7 or newer (since it uses the newer Server Ping protocol)
+
+Right now you have to manually refresh (tap the refresh button in the action bar, or it'll also refresh if you rotate the screen). Eventually I want it to periodically update while the app is open (preference for how frequently perhaps?), and perhaps even check in the background and do notifications if someone connects, etc.
+
+This app is open source; if you want to help, please do. :-) Pull requests welcome.  The project is hosted on Github at https://github.com/justdave/MCStatus which is also where you should go to report bugs or request new features.
+
+Note to developers: the class used on the back end to interact with the servers is written in such a way that you should be able to lift it intact to use in your own app if you want.  If you do this, please submit back any changes you make via Github so we can make it more useful for everyone!
+
+NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG. The Minecraft trademark is used under license from Mojang Studios as defined in the Brand and Asset Guidelines listed at https://account.mojang.com/terms#brand
+</full_description>
