@@ -1,7 +1,7 @@
 Sie haben einen Fehler gefunden oder haben eine Idee für die App<br>
 <b>https://github.com/justdave/MCStatus/issues</b><br>
 <br>
-Copyright 2014-2020 David D. Miller<br>
+Copyright 2014-2021 David D. Miller<br>
 Copyright 2020 Rick van Schijndel<br>
 Copyright 2020-2021 Yan-Luca Lentzen<br>
 <br>
