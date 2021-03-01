@@ -1,4 +1,4 @@
-<b>MCStatus Privacy Info</b><br>
+<b>MCStatus Datenschutzerklärung</b><br>
 <br>
 MCStatus sammelt keine persönlichen Informationen von dir oder deinem Gerät.<br>
 <br>
