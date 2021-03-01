@@ -9,11 +9,11 @@
     <string name="action_editserver">Server bearbeiten</string>
     <string name="action_about">Über diese App</string>
     <string name="action_help">Hilfe</string>
-    <string name="action_privacy">Privacy</string>
+    <string name="action_privacy">Datenschutz</string>
     <string name="icon_description">Server Bild</string>
     <string name="edit_server_name">Server Namen eingeben:</string>
     <string name="edit_server_name_hint">Mein Minecraft Server</string>
-    <string name="edit_server_address">Server Addresse eingeben:</string>
+    <string name="edit_server_address">Server Addrese eingeben:</string>
     <string name="edit_server_address_hint">serveraddress[:port]</string>
     <string name="userlist_header">Spieler online:</string>
     <string name="icon">Icon</string>
