@@ -19,5 +19,7 @@
     <string name="icon">Icon</string>
     <string name="ok">Ok</string>
     <string name="cancel">Abbrechen</string>
+    <string name="delete">Löschen</string>
+    <string name="delete_info">Du bist dabei denn/die Server zu löschen.</string>
 
 </resources>
