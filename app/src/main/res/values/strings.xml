@@ -18,5 +18,6 @@
     <string name="userlist_header">Users online:</string>
     <string name="icon">Icon</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
