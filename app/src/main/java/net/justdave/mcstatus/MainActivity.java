@@ -185,7 +185,7 @@ public class MainActivity extends Activity {
                             .setCancelable(false)
                             .setTitle(getResources().getIdentifier("action_deleteserver", "string", getPackageName()))
                             .setMessage(
-                                    "You are about to delete the selected server(s).")
+                                    getResources().getIdentifier("delete_info", "string", getPackageName()))
                             .setPositiveButton(getResources().getIdentifier("cancel", "string", getPackageName()),
                                     (arg0, arg1) -> {
                                         // do something when the Cancel
@@ -193,7 +193,7 @@ public class MainActivity extends Activity {
                                         // is clicked
                                         Log.i(TAG, "Cancel picked");
                                     })
-                            .setNegativeButton("Delete",
+                            .setNegativeButton(getResources().getIdentifier("delete", "string", getPackageName()),
                                     (arg0, arg1) -> {
                                         // do something when the Delete
                                         // button is clicked
