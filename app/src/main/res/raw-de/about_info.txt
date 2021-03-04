@@ -1,4 +1,4 @@
-Sie haben einen Fehler gefunden oder haben eine Idee für die App<br>
+Sie haben einen Fehler gefunden oder haben eine Idee für die App:<br>
 <b>https://github.com/justdave/MCStatus/issues</b><br>
 <br>
 Copyright 2014-2021 David D. Miller<br>

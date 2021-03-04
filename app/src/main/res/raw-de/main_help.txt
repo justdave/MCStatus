@@ -5,8 +5,8 @@
 <br>
 - Drücke lange auf denn Server denn du bearbeiten/löschen möchtest<br>
 <br>
-- Klicken auf die anderen um sie mit zu makieren und zu löschen (Du kannst nur einen Bearbeiten)<br>
+- Um mehrere Server zu makieren klick sie einfach an. (Du kannst nur einen Bearbeiten)<br>
 <br>
-- Klicke auf denn Stift zum bearbeiten oder auf denn Mülleimer um zu löschen<br>
+- Klicke auf denn Stift zum bearbeiten oder auf denn Mülleimer um denn makierten Server zu löschen<br>
 <br>
 Du kannst auf diese Informationen erneut zu greifen in dem du im Menu auf Hilfe klickst.<br>
