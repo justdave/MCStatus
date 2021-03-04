@@ -1,2 +1,8 @@
+<version name="1.0.7">
+* Sprache aktualisiert: Deutsch
+</version>
 <version name="1.0.6">
+* Ziel API 30 (Android R)
+* Code aufgeräumt - App sollte jetzt weniger Abstürzen
+* Sprache hinzugefügt: Deutsch (Danke @chaosfreak93 !)
 </version>

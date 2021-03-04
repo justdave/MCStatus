@@ -1,12 +1,12 @@
 <b>Um einen Server hinzuzufügen</b>:<br>
-- Drücke auf den <img src="android:drawable/ic_menu_add"> Knopf in der Leiste oben.<br>
+- Drücken sie auf <img src="android:drawable/ic_menu_add"> in der Leiste oben.<br>
 <br>
 <b>Um einen Server zu bearbeiten oder zu löschen</b>:<br>
 <br>
-- Drücke lange auf denn Server denn du bearbeiten/löschen möchtest<br>
+- Drücken und halten sie lange denn gewünschten Server um diesen zu bearbeiten oder zu löschen<br>
 <br>
-- Klicken auf die anderen um sie mit zu makieren und zu löschen (Du kannst nur einen Bearbeiten)<br>
+- Um mehrere Server zu makieren klicken sie diese einfach an. (Sie können nur einen Server bearbeiten)<br>
 <br>
-- Klicke auf denn Stift zum bearbeiten oder auf denn Mülleimer um zu löschen<br>
+- Klicken sie auf denn Stift um denn ausgewählten Server zu bearbeiten oder auf denn Mülleimer um diesen zu löschen<br>
 <br>
-Du kannst auf diese Informationen erneut zu greifen in dem du im Menu auf Hilfe klickst.<br>
+Sie können auf diese Informationen erneut zu greifen in dem sie im Menü auf Hilfe klicken.<br>
