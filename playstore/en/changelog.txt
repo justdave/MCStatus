@@ -1,3 +1,6 @@
+<version name="1.0.7">
+* Update German localization
+</version>
 <version name="1.0.6">
 * Target API 30 (Android R)
 * Lots of back-end code cleanup - should reduce crashes.
