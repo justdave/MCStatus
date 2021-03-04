@@ -18,5 +18,6 @@
     <string name="userlist_header">Spieler online:</string>
     <string name="icon">Icon</string>
     <string name="ok">Ok</string>
+    <string name="cancel">Abbrechen</string>
 
 </resources>

@@ -150,8 +150,8 @@ public class MainActivity extends Activity {
                             serverAddress.setText(thisServer.serverAddress());
                             alertDialogBuilder
                                     .setCancelable(false)
-                                    .setTitle("Edit Server: ".concat(thisServer.serverName()))
-                                    .setPositiveButton("OK",
+                                    .setTitle(getResources().getIdentifier("action_editserver", "string", getPackageName()))
+                                    .setPositiveButton(getResources().getIdentifier("ok", "string", getPackageName()),
                                             (dialog, id) -> {
                                                 // get user input
                                                 database.update(thisServer.serverAddress(),
@@ -160,7 +160,7 @@ public class MainActivity extends Activity {
                                                 database.getAllServers(serverlist);
                                                 refresh();
                                             })
-                                    .setNegativeButton("Cancel",
+                                    .setNegativeButton(getResources().getIdentifier("cancel", "string", getPackageName()),
                                             (dialog, id) -> dialog.cancel());
                             AlertDialog alertDialog = alertDialogBuilder.create();
                             alertDialog.show();
@@ -183,10 +183,10 @@ public class MainActivity extends Activity {
                     }
                     myAlertDialog
                             .setCancelable(false)
-                            .setTitle("Delete Server(s)")
+                            .setTitle(getResources().getIdentifier("action_deleteserver", "string", getPackageName()))
                             .setMessage(
                                     "You are about to delete the selected server(s).")
-                            .setPositiveButton("Cancel",
+                            .setPositiveButton(getResources().getIdentifier("cancel", "string", getPackageName()),
                                     (arg0, arg1) -> {
                                         // do something when the Cancel
                                         // button
@@ -332,8 +332,8 @@ public class MainActivity extends Activity {
 
             alertDialogBuilder
                     .setCancelable(false)
-                    .setTitle("Add a Server")
-                    .setPositiveButton("OK",
+                    .setTitle(getResources().getIdentifier("action_addserver", "string", getPackageName()))
+                    .setPositiveButton(getResources().getIdentifier("ok", "string", getPackageName()),
                             (dialog, id) -> {
                                 // get user input
                                 database.create(serverName.getText()
@@ -342,7 +342,7 @@ public class MainActivity extends Activity {
                                 database.getAllServers(serverlist);
                                 refresh();
                             })
-                    .setNegativeButton("Cancel",
+                    .setNegativeButton(getResources().getIdentifier("cancel", "string", getPackageName()),
                             (dialog, id) -> dialog.cancel());
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
