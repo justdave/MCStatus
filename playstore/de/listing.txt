@@ -2,14 +2,14 @@
 Ein Tool für Serveradmins um denn Status von Minecraft Servern zu verfolgen (Keine Chat App)
 </short_description>
 <full_description>
-Mit dieser App kannst du schnell und leicht denn Status deines lieblings Minecraft Server verfolgen ohne Minecraft auf deinem Rechner öffnen zu müssen.
+Mit dieser App können sie schnell und leicht denn Status ihres lieblings Minecraft Server verfolgen ohne Minecraft auf einem Rechner öffnen zu müssen.
 
-ACHTUNG: Das ist kein Spiel und keine Chat App. Dies ist ein Tool zum beobachten von Minecraft Servern, du benötigst weiterhin normales Minecraft, MineChat oder ähnliches um dem Server beizutreten.
+ACHTUNG: Das ist kein Spiel und keine Chat App. Dies ist ein Tool zum beobachten von Minecraft Servern, sie benötigen weiterhin normales Minecraft, MineChat oder ähnliches um dem Server beizutreten.
 
 Funktionen:
 
-* Hinzufügen, löschen und/oder bearbeiten der Server in der Server Liste (Drück und halte einen Server um die Bearbeitungsoptionen zu öffnen)
-* Zeigt dir folgende Informationen über die Server in der Liste:
+* Hinzufügen, löschen und/oder bearbeiten der Server in der Server Liste (Drücken und halten sie einen Server um die Bearbeitungsoptionen zu öffnen)
+* Zeigt ihnen folgende Informationen über die Server in der Liste:
 * - Das Server Logo
 * - Die Server MOTD (message of the day)
 * - Wie viele Spieler auf dem Server sind und wie viel maximal drauf können
@@ -18,11 +18,11 @@ Funktionen:
 
 Die App funktioniert nur bei Servern die Minecraft 1.7 oder neuer unterstützen (da seit der 1.7 ein neues Server Ping Protocol verwendet wird)
 
-Momentan musst du die Server Liste manuell aktualisieren (Drück dazu auf denn aktualisierungs Knopf in der oberen Leiste oder drehe deinen Bildschirm). Vielleicht aktualisieren ich die Server Liste automatisch während die App geöffnet ist, vielleicht lass ich die Liste auch im Hintergund aktualisieren um dann eine Benachrichtigung zu senden wenn jemand dem Server beitritt etc.
+Momentan müssen sie die Server Liste manuell aktualisieren (Drücken sie dazu auf denn aktualisierungs Knopf in der oberen Leiste oder drehen sie ihren Bildschirm/ihr Handy). Vielleicht aktualisieren ich die Server Liste automatisch während die App geöffnet ist, vielleicht lass ich die Liste auch im Hintergund aktualisieren um dann eine Benachrichtigung zu senden wenn jemand dem Server beitritt etc.
 
-Die App ist Open-Source; Wenn du helfen möchtest, tu das bitte :-) Pull requests sind gerne gesehen. Das Projekt findest du auf GitHub https://github.com/justdave/MCStatus. Hier kannst du auch Bugs reporten oder neue Funktionen vorschlagen.
+Die App ist Open-Source; Wenn sie helfen möchteen, tuen sie das bitte :-) Pull requests sind gerne gesehen. Das Projekt finden sie auf GitHub https://github.com/justdave/MCStatus. Hier können sie auch Bugs reporten oder neue Funktionen vorschlagen.
 
-Für Entwickler: Die im Back-End benutzte Klasse um mit Server zu interargieren, ist so geschrieben das du sie einfach raus nehmen kannst um sie in deiner eigenen App zu verwenden. Wenn du dies tust, teile uns bitte alle Änderungen via GitHub mit, damit wir sie für alle zugänglich machen können.
+Für Entwickler: Die im Back-End benutzte Klasse um mit Server zu interargieren, ist so geschrieben das sie sie einfach raus nehmen können um sie in der eigenen App zu verwenden. Wenn sie dies tuen, teilen sie uns bitte alle Änderungen via GitHub mit, damit wir sie für alle zugänglich machen können.
 
 NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG. The Minecraft trademark is used under license from Mojang Studios as defined in the Brand and Asset Guidelines listed at https://account.mojang.com/terms#brand
 </full_description>
