@@ -1,0 +1,28 @@
+# This is a basic workflow to help you get started with Actions
+
+name: L10n Checks
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+  steps:
+    - name: checkout repo content
+      uses: actions/checkout@v2 # checkout the repository content to github runner.
+
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: check for outdated localizations # run the run.py to get the latest data
+      run: |
+        python tests/check-l10n-updates.py
