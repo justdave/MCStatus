@@ -14,15 +14,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-  steps:
-    - name: checkout repo content
-      uses: actions/checkout@v2 # checkout the repository content to github runner.
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner.
 
-    - name: setup python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
 
-    - name: check for outdated localizations # run the run.py to get the latest data
-      run: |
-        python tests/check-l10n-updates.py
+      - name: check for outdated localizations # run the run.py to get the latest data
+        run: |
+          python tests/check-l10n-updates.py
