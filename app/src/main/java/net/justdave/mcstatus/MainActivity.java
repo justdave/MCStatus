@@ -150,8 +150,8 @@ public class MainActivity extends Activity {
                             serverAddress.setText(thisServer.serverAddress());
                             alertDialogBuilder
                                     .setCancelable(false)
-                                    .setTitle(getResources().getIdentifier("action_editserver", "string", getPackageName()))
-                                    .setPositiveButton(getResources().getIdentifier("ok", "string", getPackageName()),
+                                    .setTitle(getResources().getString(R.string.action_editserver))
+                                    .setPositiveButton(getResources().getString(R.string.ok),
                                             (dialog, id) -> {
                                                 // get user input
                                                 database.update(thisServer.serverAddress(),
@@ -160,7 +160,7 @@ public class MainActivity extends Activity {
                                                 database.getAllServers(serverlist);
                                                 refresh();
                                             })
-                                    .setNegativeButton(getResources().getIdentifier("cancel", "string", getPackageName()),
+                                    .setNegativeButton(getResources().getString(R.string.cancel),
                                             (dialog, id) -> dialog.cancel());
                             AlertDialog alertDialog = alertDialogBuilder.create();
                             alertDialog.show();
@@ -183,17 +183,17 @@ public class MainActivity extends Activity {
                     }
                     myAlertDialog
                             .setCancelable(false)
-                            .setTitle(getResources().getIdentifier("action_deleteserver", "string", getPackageName()))
+                            .setTitle(getResources().getString(R.string.action_deleteserver))
                             .setMessage(
-                                    getResources().getIdentifier("delete_info", "string", getPackageName()))
-                            .setPositiveButton(getResources().getIdentifier("cancel", "string", getPackageName()),
+                                    getResources().getString(R.string.delete_info))
+                            .setPositiveButton(getResources().getString(R.string.cancel),
                                     (arg0, arg1) -> {
                                         // do something when the Cancel
                                         // button
                                         // is clicked
                                         Log.i(TAG, "Cancel picked");
                                     })
-                            .setNegativeButton(getResources().getIdentifier("delete", "string", getPackageName()),
+                            .setNegativeButton(getResources().getString(R.string.delete),
                                     (arg0, arg1) -> {
                                         // do something when the Delete
                                         // button is clicked
@@ -302,15 +302,15 @@ public class MainActivity extends Activity {
         int itemId = menuitem.getItemId();
         if (itemId == R.id.action_about) {
             AboutDialog about = new AboutDialog(this);
-            about.setTitle(getResources().getIdentifier("action_about", "string", getPackageName()));
+            about.setTitle(getResources().getString(R.string.action_about));
             about.show();
         } else if (itemId == R.id.action_help) {
             HelpDialog help = new HelpDialog(this);
-            help.setTitle(getResources().getIdentifier("action_help", "string", getPackageName()));
+            help.setTitle(getResources().getString(R.string.action_help));
             help.show();
         } else if (itemId == R.id.action_privacy) {
             PrivacyDialog privacy = new PrivacyDialog(this);
-            privacy.setTitle(getResources().getIdentifier("action_privacy", "string", getPackageName()));
+            privacy.setTitle(getResources().getString(R.string.action_privacy));
             privacy.show();
         } else if (itemId == R.id.action_addserver) {
             View promptsView = LayoutInflater.from(this).inflate(
@@ -332,8 +332,8 @@ public class MainActivity extends Activity {
 
             alertDialogBuilder
                     .setCancelable(false)
-                    .setTitle(getResources().getIdentifier("action_addserver", "string", getPackageName()))
-                    .setPositiveButton(getResources().getIdentifier("ok", "string", getPackageName()),
+                    .setTitle(getResources().getString(R.string.action_addserver))
+                    .setPositiveButton(getResources().getString(R.string.ok),
                             (dialog, id) -> {
                                 // get user input
                                 database.create(serverName.getText()
@@ -342,7 +342,7 @@ public class MainActivity extends Activity {
                                 database.getAllServers(serverlist);
                                 refresh();
                             })
-                    .setNegativeButton(getResources().getIdentifier("cancel", "string", getPackageName()),
+                    .setNegativeButton(getResources().getString(R.string.cancel),
                             (dialog, id) -> dialog.cancel());
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
