@@ -1,7 +1,9 @@
 <short_description>
+<!-- Must fit in 80 characters or less (not counting this comment) -->
 Tool for server admins to monitor status of Minecraft servers (not a chat app)
 </short_description>
 <full_description>
+<!-- Must fit in 4000 characters or less (not counting this comment) -->
 This app lets you quickly view the status of your favorite multiplayer Minecraft servers without having to fire up the full Minecraft application on your desktop.
 
 NOTE: This is NOT a Minecraft game.  This is NOT a chat app.  This is a tool for monitoring Minecraft servers, you still need to use your normal client or MineChat or similar to actually connect to the server.
