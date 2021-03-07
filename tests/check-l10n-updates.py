@@ -33,11 +33,12 @@ if DEBUG:
     print(run_with_output("git version"))
     print(run_with_output('git branch'))
     print(run_with_output('git config -l'))
+    print(run_with_output('git log -n1 app/src/main/res/values/strings.xml'))
     print(run_with_output('env'))
     print("{}======================{}".format(GREEN,ENDC))
+
 for fileglob in localizable_files:
     output = run_with_output('git ls-files {} | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 --'.format(fileglob))
-
     currentdate = ""
     for line in output.splitlines():
         if DEBUG:
