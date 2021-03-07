@@ -7,7 +7,7 @@ from datetime import datetime
 
 class bcolors:
     OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
+    WARNING = '\033[91m'
     ENDC = '\033[0m'
 
 localizable_files = [
@@ -47,10 +47,10 @@ for fileglob in localized_locations:
             fileid = re.sub('(playstore/)[^/]+/', '\\1', line)
             fileid = re.sub('(main/res/[^-/]+)-[^/]+', '\\1', fileid)
             if (currentdate.timestamp() >= default_files[fileid]['commit_date'].timestamp()):
-                print("[{}PASS{}] {} is up-to-date.".format(bcolors.OKGREEN,bcolors.ENDC,line))
+                print("[{}PASS{}] {} is up-to-date. localized: {} newer than source: {}".format(bcolors.OKGREEN,bcolors.ENDC,line,currentdate,default_files[fileid]['commit_date']))
             else:
                 errors = errors + 1
-                print("[{}FAIL{}] {} is outdated.".format(bcolors.WARNING,bcolors.ENDC,line))
+                print("[{}FAIL{}] {} is outdated. localized: {} older than source: {}".format(bcolors.WARNING,bcolors.ENDC,line,currentdate,default_files[fileid]['commit_date']))
 
 if (errors > 0):
     print("{}{} outdated localization files found.{}".format(bcolors.WARNING,errors,bcolors.ENDC))
