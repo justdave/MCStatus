@@ -24,6 +24,9 @@ localized_locations = [
 
 default_files = {}
 for fileglob in localizable_files:
+    if DEBUG:
+        output = subprocess.run('git ls-files {} | xargs -n1 git log -n1'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
+        print(output)
     output = subprocess.run('git ls-files {} | xargs -n1 git log --format=format:"~ %aI" --name-only -n1'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
 
     currentdate = ""
