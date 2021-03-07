@@ -24,8 +24,14 @@ localized_locations = [
 
 default_files = {}
 if DEBUG:
+    print("{}===== DEBUG INFO ====={}".format(bcolors.OKGREEN,bcolors.ENDC))
+    print("{}git version{}".format(bcolors.OKGREEN,bcolors.ENDC))
     subprocess.run('git version', shell=True)
-    subprocess.run('git help log', shell=True)
+    print("{}git config -l{}".format(bcolors.OKGREEN,bcolors.ENDC))
+    subprocess.run('git config -l', shell=True)
+    print("{}env{}".format(bcolors.OKGREEN,bcolors.ENDC))
+    subprocess.run('env', shell=True)
+    print("{}======================{}".format(bcolors.OKGREEN,bcolors.ENDC))
 for fileglob in localizable_files:
     if DEBUG:
         subprocess.run('git ls-files {} | xargs -n1 git log -n1 --'.format(fileglob), shell=True)
