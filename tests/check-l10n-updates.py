@@ -6,7 +6,7 @@ from subprocess import PIPE,STDOUT
 import re
 from datetime import datetime
 
-DEBUG = 1
+DEBUG = 0
 GREEN = '\033[92m'
 RED = '\033[91m'
 ENDC = '\033[0m'
@@ -33,9 +33,6 @@ if DEBUG:
     print(run_with_output("git version"))
     print(run_with_output('git branch --show-current'))
     print(run_with_output('git config -l'))
-    print("{}The following should show 'More hard-coded strings localizable' on Mar 4:{}".format(GREEN,ENDC))
-    print(run_with_output('git log -n1 origin/master -- app/src/main/res/values/strings.xml'))
-    print(run_with_output('git log master'))
     print(run_with_output('env'))
     print("{}======================{}".format(GREEN,ENDC))
 
