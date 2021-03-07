@@ -25,9 +25,9 @@ localized_locations = [
 default_files = {}
 for fileglob in localizable_files:
     if DEBUG:
-        output = subprocess.run('git ls-files {} | xargs -n1 git log -n1'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
+        output = subprocess.run('git ls-files {} | xargs -n1 git log -n1 --'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
         print(output)
-    output = subprocess.run('git ls-files {} | xargs -n1 git log --format=format:"~ %aI" --name-only -n1'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
+    output = subprocess.run('git ls-files {} | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 --'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
 
     currentdate = ""
     for line in output.splitlines():
@@ -44,7 +44,7 @@ for fileglob in localizable_files:
 
 errors = 0
 for fileglob in localized_locations:
-    output = subprocess.run('git ls-files {} | grep -v "playstore/en/" | xargs -n1 git log --format=format:"~ %aI" --name-only -n1'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
+    output = subprocess.run('git ls-files {} | grep -v "playstore/en/" | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 --'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
     currentdate = ""
     for line in output.splitlines():
         if DEBUG:
