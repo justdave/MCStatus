@@ -34,7 +34,8 @@ if DEBUG:
     print(run_with_output('git branch --show-current'))
     print(run_with_output('git config -l'))
     print("{}The following should show 'More hard-coded strings localizable' on Mar 4:{}".format(GREEN,ENDC))
-    print(run_with_output('git log -n1 --follow -- app/src/main/res/values/strings.xml'))
+    print(run_with_output('git log -n1 origin/master -- app/src/main/res/values/strings.xml'))
+    print(run_with_output('git log master'))
     print(run_with_output('env'))
     print("{}======================{}".format(GREEN,ENDC))
 
