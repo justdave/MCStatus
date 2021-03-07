@@ -31,9 +31,10 @@ default_files = {}
 if DEBUG:
     print("{}===== DEBUG INFO ====={}".format(GREEN,ENDC))
     print(run_with_output("git version"))
-    print(run_with_output('git branch'))
+    print(run_with_output('git branch --show-current'))
     print(run_with_output('git config -l'))
-    print(run_with_output('git log --topo-order -n1 app/src/main/res/values/strings.xml'))
+    print("{}The following should show 'More hard-coded strings localizable' on Mar 4:{}".format(GREEN,ENDC))
+    print(run_with_output('git log -n1 app/src/main/res/values/strings.xml'))
     print(run_with_output('env'))
     print("{}======================{}".format(GREEN,ENDC))
 
