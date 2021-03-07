@@ -34,12 +34,13 @@ if DEBUG:
     print(run_with_output('git branch --show-current'))
     print(run_with_output('git config -l'))
     print("{}The following should show 'More hard-coded strings localizable' on Mar 4:{}".format(GREEN,ENDC))
-    print(run_with_output('git log -n1 app/src/main/res/values/strings.xml'))
+    print(run_with_output('git log -n1 master -- app/src/main/res/values/strings.xml'))
     print(run_with_output('env'))
     print("{}======================{}".format(GREEN,ENDC))
 
+branch = run_with_output('git branch --show-current').strip('\n')
 for fileglob in localizable_files:
-    output = run_with_output('git ls-files {} | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 --'.format(fileglob))
+    output = run_with_output('git ls-files {} | xargs -n1 git log --branches={} --format=format:"~ %aI" --name-only -n1 --'.format(fileglob,branch))
     currentdate = ""
     for line in output.splitlines():
         if DEBUG:
