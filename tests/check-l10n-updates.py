@@ -2,14 +2,14 @@
 
 import sys
 import subprocess
+from subprocess import PIPE,STDOUT
 import re
 from datetime import datetime
 
 DEBUG = 1
-class bcolors:
-    OKGREEN = '\033[92m'
-    WARNING = '\033[91m'
-    ENDC = '\033[0m'
+GREEN = '\033[92m'
+RED = '\033[91m'
+ENDC = '\033[0m'
 
 localizable_files = [
     'playstore/en/*.txt',
@@ -22,20 +22,21 @@ localized_locations = [
     'app/src/main/res/raw-*/*.txt'
     ]
 
+def run_with_output(string):
+    if DEBUG:
+        print("{}{}{}".format(GREEN,string,ENDC))
+    return subprocess.run(string, shell=True,stdout=PIPE,stderr=STDOUT).stdout.decode('utf-8')
+
 default_files = {}
 if DEBUG:
-    print("{}===== DEBUG INFO ====={}".format(bcolors.OKGREEN,bcolors.ENDC))
-    print("{}git version{}".format(bcolors.OKGREEN,bcolors.ENDC))
-    subprocess.run('git version', shell=True)
-    print("{}git config -l{}".format(bcolors.OKGREEN,bcolors.ENDC))
-    subprocess.run('git config -l', shell=True)
-    print("{}env{}".format(bcolors.OKGREEN,bcolors.ENDC))
-    subprocess.run('env', shell=True)
-    print("{}======================{}".format(bcolors.OKGREEN,bcolors.ENDC))
+    print("{}===== DEBUG INFO ====={}".format(GREEN,ENDC))
+    print(run_with_output("git version"))
+    print(run_with_output('git branch'))
+    print(run_with_output('git config -l'))
+    print(run_with_output('env'))
+    print("{}======================{}".format(GREEN,ENDC))
 for fileglob in localizable_files:
-    if DEBUG:
-        subprocess.run('git ls-files {} | xargs -n1 git log -n1 --'.format(fileglob), shell=True)
-    output = subprocess.run('git ls-files {} | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 --'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
+    output = run_with_output('git ls-files {} | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 --'.format(fileglob))
 
     currentdate = ""
     for line in output.splitlines():
@@ -52,7 +53,7 @@ for fileglob in localizable_files:
 
 errors = 0
 for fileglob in localized_locations:
-    output = subprocess.run('git ls-files {} | grep -v "playstore/en/" | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 --'.format(fileglob), shell=True,stdout=subprocess.PIPE).stdout.decode('utf-8')
+    output = run_with_output('git ls-files {} | grep -v "playstore/en/" | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 --'.format(fileglob))
     currentdate = ""
     for line in output.splitlines():
         if DEBUG:
@@ -65,15 +66,15 @@ for fileglob in localized_locations:
             if (currentdate.timestamp() >= default_files[fileid]['commit_date'].timestamp()):
                 if DEBUG:
                     print("v- localized: {} newer than source: {}".format(currentdate,default_files[fileid]['commit_date']))
-                print("[{}PASS{}] {} is up-to-date.".format(bcolors.OKGREEN,bcolors.ENDC,line))
+                print("[{}PASS{}] {} is up-to-date.".format(GREEN,ENDC,line))
             else:
                 if DEBUG:
                     print("v- localized: {} older than source: {}".format(currentdate,default_files[fileid]['commit_date']))
                 errors = errors + 1
-                print("[{}FAIL{}] {} is outdated.".format(bcolors.WARNING,bcolors.ENDC,line))
+                print("[{}FAIL{}] {} is outdated.".format(RED,ENDC,line))
 
 if (errors > 0):
-    print("{}{} outdated localization files found.{}".format(bcolors.WARNING,errors,bcolors.ENDC))
+    print("{}{} outdated localization files found.{}".format(RED,errors,ENDC))
     sys.exit(-1)
 else:
     print("All localization files up-to-date.")
