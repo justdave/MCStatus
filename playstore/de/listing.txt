@@ -1,5 +1,5 @@
 <short_description>
-Ein Tool für Serveradmins um denn Status von Minecraft Servern zu verfolgen (Keine Chat App)
+Ein Tool um denn Status von Minecraft Servern zu verfolgen (Keine Chat App)
 </short_description>
 <full_description>
 Mit dieser App können sie schnell und leicht denn Status ihres lieblings Minecraft Server verfolgen ohne Minecraft auf einem Rechner öffnen zu müssen.
