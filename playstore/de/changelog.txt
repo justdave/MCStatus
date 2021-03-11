@@ -1,5 +1,6 @@
 <version name="1.0.7">
 * Sprache aktualisiert: Deutsch
+* Material Design für Android 5.0 (Lollipop) und neuer.
 </version>
 <version name="1.0.6">
 * Ziel API 30 (Android R)
