@@ -6,7 +6,7 @@ from subprocess import PIPE,STDOUT
 import re
 from datetime import datetime
 
-DEBUG = 1
+DEBUG = 0
 GREEN = '\033[92m'
 RED = '\033[91m'
 ENDC = '\033[0m'
