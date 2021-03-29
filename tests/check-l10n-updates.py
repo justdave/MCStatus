@@ -72,7 +72,7 @@ if DEBUG:
 branch = run_with_output('git branch --show-current').strip('\n')
 errors = 0
 for fileglob in localizable_files:
-    output = run_with_output('git ls-files {} | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 {} --'.format(fileglob['source'],branch))
+    output = run_with_output('git ls-files "{}" | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 {} --'.format(fileglob['source'],branch))
     currentdate = ""
     for line in output.splitlines():
         if DEBUG:
@@ -92,7 +92,7 @@ for fileglob in localizable_files:
             if DEBUG:
                 print('fileid: {}'.format(fileid))
                 print(str(default_files[fileid]))
-    output = run_with_output('git ls-files {} | grep -v "playstore/en/" | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 {} --'.format(fileglob['localized'],branch))
+    output = run_with_output('git ls-files "{}" | grep -v "playstore/en/" | xargs -n1 git log --format=format:"~ %aI" --name-only -n1 {} --'.format(fileglob['localized'],branch))
     currentdate = ""
     for line in output.splitlines():
         if DEBUG:
