@@ -13,7 +13,8 @@
         android:fullBackupContent="@xml/backup_descriptor">
         <activity
             android:name="net.justdave.mcstatus.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
