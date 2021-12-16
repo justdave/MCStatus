@@ -1,8 +1,14 @@
+<version name="1.0.8">
+* Update German and English localization
+* Update Dependencies
+* Target API 31 (Android 12)
+</version>
 <version name="1.0.7">
 * Update German localization
+* New App Design for Android 5.0 and above.
 </version>
 <version name="1.0.6">
-* Target API 30 (Android R)
+* Target API 30 (Android 11)
 * Lots of back-end code cleanup - should reduce crashes.
 * Add German localization (thanks, @chaosfreak93 !)
 </version>
