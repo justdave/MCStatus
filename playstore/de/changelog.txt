@@ -1,9 +1,14 @@
+<version name="1.0.8">
+* Sprache aktualisiert: Deutsch, English
+* Abhängigkeiten aktualisiert
+* Ziel API 31 (Android 12)
+</version>
 <version name="1.0.7">
 * Sprache aktualisiert: Deutsch
-* Material Design für Android 5.0 (Lollipop) und neuer.
+* Neues App Design für Android 5.0 und neuer.
 </version>
 <version name="1.0.6">
-* Ziel API 30 (Android R)
+* Ziel API 30 (Android 11)
 * Code aufgeräumt - App sollte jetzt weniger Abstürzen
 * Sprache hinzugefügt: Deutsch (Danke @chaosfreak93 !)
 </version>
