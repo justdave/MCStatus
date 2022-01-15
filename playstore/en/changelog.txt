@@ -2,9 +2,6 @@
 * Update German and English localization
 * Update Dependencies
 * Target API 31 (Android 12)
-</version>
-<version name="1.0.7">
-* Update German localization
 * New App Design for Android 5.0 and above.
 </version>
 <version name="1.0.6">
