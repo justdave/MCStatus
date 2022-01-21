@@ -1,3 +1,6 @@
+![Compile](https://github.com/justdave/MCStatus/actions/workflows/main.yml/badge.svg)
+![Localization](https://github.com/justdave/MCStatus/actions/workflows/l10n.yml/badge.svg)
+
 MCStatus
 ========
 
