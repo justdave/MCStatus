@@ -24,7 +24,8 @@ Right now you have to manually refresh (tap the refresh button in the action bar
 
 This app is open source; if you want to help, please do. :-) Pull requests welcome.  The project is hosted on Github at https://github.com/justdave/MCStatus which is also where you should go to report bugs or request new features.
 
+We are especially in need of a Russian localization if you are willing to translate.  See https://github.com/justdave/MCStatus/issues/33 for details.
+
 Note to developers: the class used on the back end to interact with the servers is written in such a way that you should be able to lift it intact to use in your own app if you want.  If you do this, please submit back any changes you make via Github so we can make it more useful for everyone!
 
-NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG. The Minecraft trademark is used under license from Mojang Studios as defined in the Brand and Asset Guidelines listed at https://account.mojang.com/terms#brand
-</full_description>
+NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG. The Minecraft trademark is used under license from Mojang Studios as defined in the Brand and Asset Guidelines listed at https://account.mojang.com/terms#brand</full_description>
