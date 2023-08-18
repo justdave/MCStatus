@@ -114,6 +114,7 @@
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
                                       <entry key="backgroundColor" value="000000" />
+                                      <entry key="generateWebpIcons" value="false" />
                                       <entry key="outputName" value="meterblocks" />
                                     </map>
                                   </option>
