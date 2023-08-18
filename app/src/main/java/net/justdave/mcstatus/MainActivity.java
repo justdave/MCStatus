@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
     private final ImageGetter imgGetter = source -> {
         Drawable drawable;
         Log.i(TAG, "Drawable source: " + source);
-        int rid = getResources().getIdentifier(source, null, null);
+        @SuppressLint("DiscouragedApi") int rid = getResources().getIdentifier(source, null, null);
         if (rid > 0) {
             drawable = getResources().getDrawable(rid);
         } else {

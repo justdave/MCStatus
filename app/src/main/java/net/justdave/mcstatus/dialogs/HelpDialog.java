@@ -1,5 +1,6 @@
 package net.justdave.mcstatus.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -28,7 +29,7 @@ public class HelpDialog extends Dialog {
         public Drawable getDrawable(String source) {
             Drawable drawable;
             Log.i(TAG, "Drawable source: " + source);
-            int rid = mContext.getResources().getIdentifier(source, null, null);
+            @SuppressLint("DiscouragedApi") int rid = mContext.getResources().getIdentifier(source, null, null);
             if (rid > 0) {
                 drawable = mContext.getResources().getDrawable(rid);
             } else {
