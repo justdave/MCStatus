@@ -25,6 +25,7 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     ndkVersion '24.0.7956693 rc2'
+    namespace 'net.justdave.mcstatus'
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
             def newApkName
