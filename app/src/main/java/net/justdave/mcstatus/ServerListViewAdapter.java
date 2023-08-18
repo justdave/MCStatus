@@ -72,9 +72,9 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		server_description.setBackgroundColor(0x00000000);
 		server_description.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 		server_description.setFocusable(false);
-        server_description.setFocusableInTouchMode(false);
-        server_description.setClickable(false);
-        server_description.setLongClickable(false);
+		server_description.setFocusableInTouchMode(false);
+		server_description.setClickable(false);
+		server_description.setLongClickable(false);
 		server_description.setTag(String.valueOf(position));
 		server_description.setOnLongClickListener(this);
 		server_description.setOnClickListener(this);

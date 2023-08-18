@@ -27,17 +27,13 @@ public class MinecraftServer {
 	private static final String TAG = MinecraftServer.class.getSimpleName();
 	private static final int THUMBNAIL_SIZE = 64;
 
-	private String serverName = "My Minecraft Server";
-	private String serverAddress = "localhost";
+	private final String serverName;
+	private final String serverAddress;
 	private int queryPort = 25565; // the default minecraft query port
 	private JSONObject serverJSON = new JSONObject();
 
-	public MinecraftServer() { // default to localhost:25565
-		setDescription("Loading...");
-	}
-
 	public MinecraftServer(String name, String address) throws URISyntaxException {
-        serverName = name;
+		serverName = name;
 		Log.i(TAG, "new MinecraftServer(".concat(address).concat(")"));
 		URI uri = new URI("my://" + address);
 		serverAddress = uri.getHost();
@@ -96,7 +92,6 @@ public class MinecraftServer {
 
 	public ArrayList<String> playerList() {
 		ArrayList<String> result = new ArrayList<>();
-		result.clear();
 		JSONObject players = serverJSON.optJSONObject("players");
 		if (players == null) {
 			return result;
@@ -390,10 +385,6 @@ public class MinecraftServer {
 			}
 
 			theInt |= (theByte & 0x7F) << (7 * i);
-//			if (byteCounter > 5) {
-//				Log.w(TAG, String.format("readVarInt: invalid data received, %d bytes", byteCounter));
-//				return -1;
-//			}
 			if (theByte == 0xffffffff){
 				Log.w(TAG, String.format("readVarInt: received unexpected byte value: %#x", theByte));
 				return -1;
