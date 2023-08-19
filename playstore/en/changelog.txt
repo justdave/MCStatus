@@ -1,3 +1,6 @@
+<version name="1.0.9">
+* Target API 33 (Android 13)
+</version>
 <version name="1.0.8">
 * Update German and English localization
 * Update Dependencies
