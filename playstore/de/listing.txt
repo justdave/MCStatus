@@ -26,4 +26,5 @@ Wir benötigen eine Russische Übersetzung, wenn sie Lust haben die App zu über
 
 Für Entwickler: Die im Back-End benutzte Klasse um mit Server zu interargieren, ist so geschrieben das sie die Klasse einfach raus nehmen können um sie in anderen Projekten zu verwenden. Wenn sie dies tuen, teilen sie uns bitte alle Änderungen via GitHub mit, damit wir sie für alle zugänglich machen können.
 
-NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG. The Minecraft trademark is used under license from Mojang Studios as defined in the Brand and Asset Guidelines listed at https://account.mojang.com/terms#brand</full_description>
+NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT. The Minecraft trademark is used under license from Mojang Synergies AB as defined in the Minecraft Usage Guidelines listed at https://www.minecraft.net/en-us/usage-guidelines
+</full_description>

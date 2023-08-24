@@ -1,11 +1,11 @@
 To request new features or file bug reports, please visit<br>
 <b>https://github.com/justdave/MCStatus/issues</b><br>
 <br>
-Copyright 2014-2022 David D. Miller<br>
+Copyright 2014-2023 David D. Miller<br>
 Copyright 2020 Rick van Schijndel<br>
 Copyright 2020-2022 Yan-Luca Lentzen<br>
 <br>
 Licensed under the MIT License<br>
 <br>
-Minecraft is a registered trademark of Mojang Studios and used under license<br>
-https://account.mojang.com/terms#brand<br>
+Minecraft is a registered trademark of Mojang Synergies AB and used under license<br>
+https://www.minecraft.net/en-us/usage-guidelines<br>
