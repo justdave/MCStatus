@@ -1,3 +1,6 @@
+<version name="1.0.11">
+* The main window is no longer partially hidden behind the system navigation on newer Android versions.
+</version>
 <version name="1.0.10">
 * Target API 36 (Android 16)
 * Add Russian localization (thanks, @Kasi07 !)
