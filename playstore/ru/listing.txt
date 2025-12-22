@@ -1,6 +1,6 @@
 <short_description>
 <!-- Must fit in 80 characters or less (not counting this comment) -->
-Инструмент для администраторов серверов для мониторинга статуса серверов Майнкрафт (не чат-приложение)
+Администраторы могут отслеживать состояние серверов Minecraft (не для общения).
 </short_description>
 <full_description>
 <!-- Must fit in 4000 characters or less (not counting this comment) -->
