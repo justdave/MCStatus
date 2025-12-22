@@ -1,19 +1,19 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 33
+    compileSdk = 36
     def applicationName = "MCStatus"
     defaultConfig {
         applicationId "net.justdave.mcstatus"
         minSdkVersion 19
-        targetSdkVersion 33
+        targetSdkVersion 36
         versionCode 12
         versionName '1.0.9'
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             signingConfig getSigningConfig()
         }
     }
