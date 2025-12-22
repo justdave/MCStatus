@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MCStatus</string>
+    <string name="about_version">Версия %1$s (Сборка %2$d)</string>
+    <string name="action_refresh">Обновить</string>
+    <string name="action_addserver">Добавить сервер</string>
+    <string name="action_deleteserver">Удалить сервер(ы)</string>
+    <string name="action_editserver">Редактировать сервер</string>
+    <string name="action_about">О приложении</string>
+    <string name="action_help">Помощь</string>
+    <string name="action_privacy">Конфиденциальность</string>
+    <string name="icon_description">Иконка сервера</string>
+    <string name="edit_server_name">Введите имя сервера:</string>
+    <string name="edit_server_name_hint">Мой сервер Minecraft</string>
+    <string name="edit_server_address">Введите адрес сервера:</string>
+    <string name="edit_server_address_hint">адрессервера[:порт]</string>
+    <string name="userlist_header">Пользователи онлайн:</string>
+    <string name="icon">Иконка</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
+    <string name="delete_info">Вы собираетесь удалить выбранный(е) сервер(ы).</string>
+
+</resources>

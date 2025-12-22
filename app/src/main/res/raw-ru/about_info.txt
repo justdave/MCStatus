@@ -1,0 +1,11 @@
+Для запроса новых функций или сообщения об ошибках, пожалуйста, посетите<br>
+<b>https://github.com/justdave/MCStatus/issues</b><br>
+<br>
+Авторское право 2014-2023 David D. Miller<br>
+Авторское право 2020 Rick van Schijndel<br>
+Авторское право 2020-2022 Yan-Luca Lentzen<br>
+<br>
+Лицензировано по Лицензии MIT<br>
+<br>
+Майнкрафт является зарегистрированной торговой маркой Моджанг Синергис АБ и используется по лицензии<br>
+https://www.minecraft.net/en-us/usage-guidelines<br>
