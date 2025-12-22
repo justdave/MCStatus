@@ -1,5 +1,6 @@
 <version name="1.0.10">
 * Target API 36 (Android 16)
+* Add Russian localization (thanks, @Kasi07 !)
 </version>
 <version name="1.0.9">
 * Target API 33 (Android 13)

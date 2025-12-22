@@ -1,3 +1,7 @@
+<version name="1.0.10">
+* Целевой API 36 (Android 16)
+* Добавлена русская локализация (спасибо, @Kasi07!)
+</version>
 <version name="1.0.9">
 * Целевой API 33 (Android 13)
 </version>

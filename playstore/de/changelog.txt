@@ -1,5 +1,6 @@
 <version name="1.0.10">
 * Ziel API 36 (Android 16)
+* Russische Lokalisierung hinzugefügt (vielen Dank, @Kasi07!).
 </version>
 <version name="1.0.9">
 * Ziel API 33 (Android 13)
