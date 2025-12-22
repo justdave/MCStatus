@@ -270,7 +270,7 @@ public class MinecraftServer {
 							color = "";
 					}
 					result.append("</span><span style=\"");
-					if (color.length() > 0) result.append("color: ".concat(color).concat("; "));
+					if (!color.isEmpty()) result.append("color: ".concat(color).concat("; "));
 					if (bold) result.append("font-weight: bold; ");
 					if (strikethrough) result.append("text-decoration: line-through; ");
 					if (underlined) result.append("text-decoration: underscore; ");
