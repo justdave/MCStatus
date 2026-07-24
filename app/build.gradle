@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk = 36
     def applicationName = "MCStatus"
     defaultConfig {
         applicationId "net.justdave.mcstatus"
-        minSdkVersion 19
-        targetSdkVersion 36
+        minSdk = 19
+        targetSdk = 37
         versionCode 14
         versionName '1.0.11'
     }
@@ -25,6 +24,7 @@ android {
     }
     ndkVersion '24.0.7956693 rc2'
     namespace 'net.justdave.mcstatus'
+    compileSdk = 37
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach { output ->
             def newApkName
