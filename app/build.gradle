@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 
+def applicationName = "MCStatus"
+
 android {
-    def applicationName = "MCStatus"
     defaultConfig {
         applicationId "net.justdave.mcstatus"
         minSdk = 19
@@ -22,22 +23,24 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    ndkVersion '24.0.7956693 rc2'
-    namespace 'net.justdave.mcstatus'
-    compileSdk = 37
-    applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach { output ->
-            def newApkName
-            def newBaseName
-            if (output.baseName == 'release') {
-                newBaseName = ''
-            } else {
-                newBaseName = "-${output.baseName}"
-            }
-            newApkName = "${applicationName}${newBaseName}-${variant.versionName}.apk"
-            outputFileName = new File(newApkName)
+    ndkVersion '28.2.13676358'
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
+    namespace 'net.justdave.mcstatus'
+    compileSdk = 37
+}
+
+androidComponents {
+    onVariants(selector().all(), { variant ->
+        variant.outputs.forEach { output ->
+            def nameSuffix = variant.name == 'release' ? '' : "-${variant.name}"
+            def version = output.versionName.get()
+            output.outputFileName.set("${applicationName}${nameSuffix}-${version}.apk")
+        }
+    })
 }
 
 dependencies {

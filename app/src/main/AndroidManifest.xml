@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:fullBackupContent="@xml/backup_descriptor"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        tools:targetApi="s">
+        android:pageSizeCompat="disabled"
+        tools:targetApi="36">
         <activity
             android:name="net.justdave.mcstatus.MainActivity"
             android:exported="true">
