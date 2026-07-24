@@ -1,3 +1,6 @@
+<version name="1.0.12">
+* Ziel API 37 (Android 17)
+</version>
 <version name="1.0.11">
 * Das Hauptfenster ist auf neueren Android-Versionen nicht mehr teilweise hinter der Systemnavigation verborgen.
 </version>
