@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -94,10 +95,10 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		while (playerIterator.hasNext()) {
 			playerlist.append(playerIterator.next());
 			if (playerIterator.hasNext()) {
-				playerlist.append("\n");
+				playerlist.append("<br>");
 			}
 		}
-		server_playerlist.setText(playerlist.toString());
+		server_playerlist.setText(HtmlCompat.fromHtml(playerlist.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 		TextView server_userlist_header = rowView
 				.findViewById(R.id.server_userlist_header);
 		if (playerlist.length() > 0) {
@@ -109,7 +110,7 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		}
 		TextView server_serverversion = rowView
 				.findViewById(R.id.server_serverversion);
-		server_serverversion.setText(values.get(position).serverVersion());
+		server_serverversion.setText(HtmlCompat.fromHtml(values.get(position).serverVersion(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 		rowView.setClickable(false);
 		rowView.setOnLongClickListener(this);
 		rowView.setOnClickListener(this);

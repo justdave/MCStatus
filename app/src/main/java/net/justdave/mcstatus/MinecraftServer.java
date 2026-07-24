@@ -104,7 +104,7 @@ public class MinecraftServer {
 		while (pos < sample.length()) {
 			JSONObject entry = sample.optJSONObject(pos++);
 			String username = entry.optString("name");
-			result.add(username);
+			result.add(minecraftToHtml(username, false));
 		}
 		Log.i(TAG, "playerList() returning ".concat(result.toString()));
 		return result;
@@ -115,7 +115,7 @@ public class MinecraftServer {
 		if (version == null) {
 			return "";
 		}
-		return version.optString("name");
+		return minecraftToHtml(version.optString("name"), false);
 	}
 
 	public String description() {
@@ -188,101 +188,135 @@ public class MinecraftServer {
 				}
 			}
 		} else {
-			String color = "";
-			boolean bold = false;
-			boolean italic = false;
-			boolean strikethrough = false;
-			boolean underlined = false;
-			result.append("<span>");
-			while (curChar < desc.length()) {
-				char theChar = desc.charAt(curChar++);
-				if (theChar == '§') {
-					char code = desc.charAt(curChar++);
-					switch (code) {
-						case '0':
-							color = "#000000";
-							break;
-						case '1':
-							color = "#0000aa";
-							break;
-						case '2':
-							color = "#00aa00";
-							break;
-						case '3':
-							color = "#00aaaa";
-							break;
-						case '4':
-							color = "#aa0000";
-							break;
-						case '5':
-							color = "#aa00aa";
-							break;
-						case '6':
-							color = "#ffaa00";
-							break;
-						case '7':
-							color = "#aaaaaa";
-							break;
-						case '8':
-							color = "#555555";
-							break;
-						case '9':
-							color = "#5555ff";
-							break;
-						case 'a':
-							color = "#55ff55";
-							break;
-						case 'b':
-							color = "#55ffff";
-							break;
-						case 'c':
-							color = "#ff5555";
-							break;
-						case 'd':
-							color = "#ff55ff";
-							break;
-						case 'e':
-							color = "#ffff55";
-							break;
-						case 'f':
-							color = "#ffffff";
-							break;
-						case 'k':
-							color = "";
-							break;
-						case 'l':
-							bold = true;
-							break;
-						case 'm':
-							strikethrough = true;
-							break;
-						case 'n':
-							underlined = true;
-							break;
-						case 'o':
-							italic = true;
-							break;
-						case 'r':
-							bold = false;
-							italic = false;
-							strikethrough = false;
-							underlined = false;
-							color = "";
-					}
-					result.append("</span><span style=\"");
-					if (!color.isEmpty()) result.append("color: ".concat(color).concat("; "));
-					if (bold) result.append("font-weight: bold; ");
-					if (strikethrough) result.append("text-decoration: line-through; ");
-					if (underlined) result.append("text-decoration: underscore; ");
-					if (italic) result.append("font-style: italic; ");
-					result.append("\">");
-				} else {
-					result.append(theChar);
-				}
-			}
-			result.append("</span>");
+			result.append(minecraftToHtml(desc, true));
 		}
 		result.append("</body>");
+		return result.toString();
+	}
+
+	String minecraftToHtml(String text, boolean forWebView) {
+		StringBuilder result = new StringBuilder();
+		int curChar = 0;
+		String color = "";
+		boolean bold = false;
+		boolean italic = false;
+		boolean strikethrough = false;
+		boolean underlined = false;
+		boolean stylesChanged = false;
+		boolean openSpan = false;
+
+		if (forWebView) {
+			result.append("<span>");
+			openSpan = true;
+		}
+		while (curChar < text.length()) {
+			char theChar = text.charAt(curChar++);
+			if (theChar == '§' && curChar < text.length()) {
+				char code = text.charAt(curChar++);
+				switch (code) {
+					case '0':
+						color = "#000000";
+						break;
+					case '1':
+						color = "#0000aa";
+						break;
+					case '2':
+						color = "#00aa00";
+						break;
+					case '3':
+						color = "#00aaaa";
+						break;
+					case '4':
+						color = "#aa0000";
+						break;
+					case '5':
+						color = "#aa00aa";
+						break;
+					case '6':
+						color = "#ffaa00";
+						break;
+					case '7':
+						color = "#aaaaaa";
+						break;
+					case '8':
+						color = "#555555";
+						break;
+					case '9':
+						color = "#5555ff";
+						break;
+					case 'a':
+						color = "#55ff55";
+						break;
+					case 'b':
+						color = "#55ffff";
+						break;
+					case 'c':
+						color = "#ff5555";
+						break;
+					case 'd':
+						color = "#ff55ff";
+						break;
+					case 'e':
+						color = "#ffff55";
+						break;
+					case 'f':
+						color = "#ffffff";
+						break;
+					case 'k':
+						// obfuscated - not supported easily, skip
+						break;
+					case 'l':
+						bold = true;
+						break;
+					case 'm':
+						strikethrough = true;
+						break;
+					case 'n':
+						underlined = true;
+						break;
+					case 'o':
+						italic = true;
+						break;
+					case 'r':
+						bold = false;
+						italic = false;
+						strikethrough = false;
+						underlined = false;
+						color = "";
+						break;
+				}
+				stylesChanged = true;
+			} else {
+				if (stylesChanged) {
+					if (forWebView) {
+						if (openSpan) result.append("</span>");
+						result.append("<span style=\"");
+						if (!color.isEmpty()) result.append("color: ").append(color).append("; ");
+						if (bold) result.append("font-weight: bold; ");
+						if (strikethrough) result.append("text-decoration: line-through; ");
+						if (underlined) result.append("text-decoration: underline; ");
+						if (italic) result.append("font-style: italic; ");
+						result.append("\">");
+						openSpan = true;
+					} else {
+						result.append("</font></b></i></u>");
+						result.append("<font");
+						if (!color.isEmpty()) result.append(" color=\"").append(color).append("\"");
+						result.append(">");
+						if (bold) result.append("<b>");
+						if (italic) result.append("<i>");
+						if (underlined) result.append("<u>");
+					}
+					stylesChanged = false;
+				}
+				result.append(theChar);
+			}
+		}
+		if (forWebView) {
+			if (openSpan) result.append("</span>");
+		} else {
+			result.append("</font></b></i></u>");
+		}
 		return result.toString();
 	}
 

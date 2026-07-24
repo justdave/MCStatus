@@ -31,6 +31,10 @@ android {
     }
     namespace 'net.justdave.mcstatus'
     compileSdk = 37
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 androidComponents {
@@ -45,4 +49,6 @@ androidComponents {
 
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20260719'
 }
