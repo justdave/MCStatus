@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.core.text.HtmlCompat;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -69,11 +68,11 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		}
 		TextView server_name = rowView.findViewById(R.id.server_name);
 		String name = values.get(position).serverName();
-		String version = HtmlCompat.fromHtml(values.get(position).serverVersion(), HtmlCompat.FROM_HTML_MODE_LEGACY).toString();
-		version = version.replace(" ", "\u00A0");
+		CharSequence version = values.get(position).serverVersion();
+		version = version.toString().replace(" ", "\u00A0");
 		SpannableStringBuilder ssb = new SpannableStringBuilder(name);
 		ssb.setSpan(new StyleSpan(Typeface.BOLD), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		if (!version.isEmpty()) {
+		if (version.length() > 0) {
 			int start = ssb.length();
 			ssb.append(" ").append(version);
 			ssb.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context, android.R.color.holo_green_dark)), start, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -82,7 +81,7 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 		server_name.setText(ssb);
 
 		TextView server_description = rowView.findViewById(R.id.server_description);
-		server_description.setText(HtmlCompat.fromHtml(values.get(position).description(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+		server_description.setText(values.get(position).description());
 		server_description.setTag(String.valueOf(position));
 		server_description.setOnLongClickListener(this);
 		server_description.setOnClickListener(this);
@@ -96,16 +95,16 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 				.concat(Integer.toString(values.get(position).maxPlayers())));
 		TextView server_playerlist = rowView
 				.findViewById(R.id.server_playerlist);
-		StringBuilder playerlist = new StringBuilder();
-		ListIterator<String> playerIterator = values.get(position).playerList()
+		SpannableStringBuilder playerlist = new SpannableStringBuilder();
+		ListIterator<CharSequence> playerIterator = values.get(position).playerList()
 				.listIterator();
 		while (playerIterator.hasNext()) {
 			playerlist.append(playerIterator.next());
 			if (playerIterator.hasNext()) {
-				playerlist.append("<br>");
+				playerlist.append("\n");
 			}
 		}
-		server_playerlist.setText(HtmlCompat.fromHtml(playerlist.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY));
+		server_playerlist.setText(playerlist);
 		TextView server_userlist_header = rowView
 				.findViewById(R.id.server_userlist_header);
 		if (playerlist.length() > 0) {

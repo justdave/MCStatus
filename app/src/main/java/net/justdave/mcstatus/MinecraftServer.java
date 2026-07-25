@@ -6,6 +6,14 @@ package net.justdave.mcstatus;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Base64;
 import android.util.Log;
 
@@ -91,8 +99,8 @@ public class MinecraftServer {
 		return players.optInt("online");
 	}
 
-	public ArrayList<String> playerList() {
-		ArrayList<String> result = new ArrayList<>();
+	public ArrayList<CharSequence> playerList() {
+		ArrayList<CharSequence> result = new ArrayList<>();
 		JSONObject players = serverJSON.optJSONObject("players");
 		if (players == null) {
 			return result;
@@ -105,21 +113,21 @@ public class MinecraftServer {
 		while (pos < sample.length()) {
 			JSONObject entry = sample.optJSONObject(pos++);
 			String username = entry.optString("name");
-			result.add(minecraftToHtml(username));
+			result.add(minecraftToSpannable(username, new Style()));
 		}
-		Log.i(TAG, "playerList() returning ".concat(result.toString()));
+		Log.i(TAG, "playerList() returning Spannables");
 		return result;
 	}
 
-	public String serverVersion() {
+	public CharSequence serverVersion() {
 		JSONObject version = serverJSON.optJSONObject("version");
 		if (version == null) {
 			return "";
 		}
-		return minecraftToHtml(version.optString("name"));
+		return minecraftToSpannable(version.optString("name"), new Style());
 	}
 
-	private static class Style {
+	static class Style {
 		String color = "";
 		boolean bold = false;
 		boolean italic = false;
@@ -159,22 +167,42 @@ public class MinecraftServer {
 				default: return "";
 			}
 		}
+
+		void apply(SpannableStringBuilder ssb, int start, int end) {
+			if (start >= end) return;
+			if (!color.isEmpty()) {
+				ssb.setSpan(new ForegroundColorSpan(Color.parseColor(color)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			}
+			if (bold && italic) {
+				ssb.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			} else if (bold) {
+				ssb.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			} else if (italic) {
+				ssb.setSpan(new StyleSpan(Typeface.ITALIC), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			}
+			if (underlined) {
+				ssb.setSpan(new UnderlineSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			}
+			if (strikethrough) {
+				ssb.setSpan(new StrikethroughSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			}
+		}
 	}
 
-	public String description() {
+	public CharSequence description() {
 		Object description = serverJSON.opt("description");
 		if (description != null) {
-			return parseComponent(description, new Style());
+			return parseComponentToSpannable(description, new Style());
 		}
 		return "";
 	}
 
-	private String parseComponent(Object component, Style inheritedStyle) {
-		StringBuilder result = new StringBuilder();
+	private SpannableStringBuilder parseComponentToSpannable(Object component, Style inheritedStyle) {
+		SpannableStringBuilder ssb = new SpannableStringBuilder();
 		Style currentStyle = inheritedStyle.copy();
 
 		if (component instanceof String) {
-			result.append(minecraftToHtml((String) component, currentStyle));
+			ssb.append(minecraftToSpannable((String) component, currentStyle));
 		} else if (component instanceof JSONObject) {
 			JSONObject obj = (JSONObject) component;
 			if (obj.has("color")) currentStyle.color = Style.colorToHex(obj.optString("color"));
@@ -185,7 +213,7 @@ public class MinecraftServer {
 
 			String text = obj.optString("text");
 			if (!text.isEmpty()) {
-				result.append(minecraftToHtml(text, currentStyle));
+				ssb.append(minecraftToSpannable(text, currentStyle));
 			}
 
 			JSONArray extra = obj.optJSONArray("extra");
@@ -193,7 +221,7 @@ public class MinecraftServer {
 				for (int i = 0; i < extra.length(); i++) {
 					Object extraComponent = extra.opt(i);
 					if (extraComponent != null) {
-						result.append(parseComponent(extraComponent, currentStyle));
+						ssb.append(parseComponentToSpannable(extraComponent, currentStyle));
 					}
 				}
 			}
@@ -202,24 +230,25 @@ public class MinecraftServer {
 			for (int i = 0; i < array.length(); i++) {
 				Object entry = array.opt(i);
 				if (entry != null) {
-					result.append(parseComponent(entry, currentStyle));
+					ssb.append(parseComponentToSpannable(entry, currentStyle));
 				}
 			}
 		}
 
-		return result.toString();
+		return ssb;
 	}
 
-	String minecraftToHtml(String text, Style baseStyle) {
-		StringBuilder result = new StringBuilder();
+	SpannableStringBuilder minecraftToSpannable(String text, Style baseStyle) {
+		SpannableStringBuilder ssb = new SpannableStringBuilder();
 		int curChar = 0;
 		Style currentStyle = baseStyle.copy();
-		boolean stylesChanged = true;
-		boolean isAtStartOfLine = true;
+		int start = 0;
 
 		while (curChar < text.length()) {
 			char theChar = text.charAt(curChar++);
 			if (theChar == '§' && curChar < text.length()) {
+				currentStyle.apply(ssb, start, ssb.length());
+				start = ssb.length();
 				char code = text.charAt(curChar++);
 				switch (code) {
 					case '0': currentStyle.color = "#000000"; break;
@@ -246,43 +275,13 @@ public class MinecraftServer {
 						currentStyle = baseStyle.copy();
 						break;
 				}
-				stylesChanged = true;
-			} else if (theChar == '\n') {
-				result.append("</font></b></i></u></strike><br>");
-				stylesChanged = true;
-				isAtStartOfLine = true;
 			} else {
-				if (stylesChanged) {
-					result.append("</font></b></i></u></strike>");
-					result.append("<font");
-					if (!currentStyle.color.isEmpty()) result.append(" color=\"").append(currentStyle.color).append("\"");
-					result.append(">");
-					if (currentStyle.bold) result.append("<b>");
-					if (currentStyle.italic) result.append("<i>");
-					if (currentStyle.underlined) result.append("<u>");
-					if (currentStyle.strikethrough) result.append("<strike>");
-					stylesChanged = false;
-				}
-				if (theChar == ' ') {
-					if (isAtStartOfLine) {
-						result.append("&nbsp;");
-					} else {
-						result.append(' ');
-					}
-				} else {
-					result.append(theChar);
-					isAtStartOfLine = false;
-				}
+				ssb.append(theChar);
 			}
 		}
-		result.append("</font></b></i></u></strike>");
-		return result.toString();
+		currentStyle.apply(ssb, start, ssb.length());
+		return ssb;
 	}
-
-	String minecraftToHtml(String text) {
-		return minecraftToHtml(text, new Style());
-	}
-
 
 	public Bitmap image() {
 		String imageData = serverJSON.optString("favicon");
