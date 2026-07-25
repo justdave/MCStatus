@@ -1,7 +1,7 @@
 Для запроса новых функций или сообщения об ошибках, пожалуйста, посетите<br>
 <b>https://github.com/justdave/MCStatus/issues</b><br>
 <br>
-Авторское право 2014-2023 David D. Miller<br>
+Авторское право 2014-2026 David D. Miller<br>
 Авторское право 2020 Rick van Schijndel<br>
 Авторское право 2020-2022 Yan-Luca Lentzen<br>
 <br>
