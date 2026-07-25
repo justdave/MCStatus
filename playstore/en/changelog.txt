@@ -1,4 +1,7 @@
 <version name="1.0.12">
+* Failed network requests will no longer make the refresh icon spin forever.
+* Formatted text is now processed in all server fields, not just the description.
+* Massive improvements to text formatting.
 * Target API 37 (Android 17)
 </version>
 <version name="1.0.11">

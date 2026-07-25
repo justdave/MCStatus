@@ -3,13 +3,17 @@ package net.justdave.mcstatus;
 import android.R.color;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Base64;
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -63,19 +67,22 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 //			Log.i(TAG, "View is not selected.");
 			rowView.setBackgroundColor(ContextCompat.getColor(context, color.background_dark));
 		}
-		TextView server_name = rowView
-				.findViewById(R.id.server_name);
-		server_name.setText(values.get(position).serverName());
-		WebView server_description = rowView
-				.findViewById(R.id.server_description);
-		server_description.loadData(Base64.encodeToString(values.get(position).description().getBytes(), Base64.DEFAULT),
-				"text/html", "base64");
-		server_description.setBackgroundColor(0x00000000);
-		server_description.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-		server_description.setFocusable(false);
-		server_description.setFocusableInTouchMode(false);
-		server_description.setClickable(false);
-		server_description.setLongClickable(false);
+		TextView server_name = rowView.findViewById(R.id.server_name);
+		String name = values.get(position).serverName();
+		String version = HtmlCompat.fromHtml(values.get(position).serverVersion(), HtmlCompat.FROM_HTML_MODE_LEGACY).toString();
+		version = version.replace(" ", "\u00A0");
+		SpannableStringBuilder ssb = new SpannableStringBuilder(name);
+		ssb.setSpan(new StyleSpan(Typeface.BOLD), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		if (!version.isEmpty()) {
+			int start = ssb.length();
+			ssb.append(" ").append(version);
+			ssb.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context, android.R.color.holo_green_dark)), start, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			ssb.setSpan(new RelativeSizeSpan(0.8f), start, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		}
+		server_name.setText(ssb);
+
+		TextView server_description = rowView.findViewById(R.id.server_description);
+		server_description.setText(HtmlCompat.fromHtml(values.get(position).description(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 		server_description.setTag(String.valueOf(position));
 		server_description.setOnLongClickListener(this);
 		server_description.setOnClickListener(this);
@@ -108,9 +115,6 @@ public class ServerListViewAdapter extends ArrayAdapter<MinecraftServer>
 			server_userlist_header.setVisibility(View.GONE);
 			server_playerlist.setVisibility(View.GONE);
 		}
-		TextView server_serverversion = rowView
-				.findViewById(R.id.server_serverversion);
-		server_serverversion.setText(HtmlCompat.fromHtml(values.get(position).serverVersion(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 		rowView.setClickable(false);
 		rowView.setOnLongClickListener(this);
 		rowView.setOnClickListener(this);

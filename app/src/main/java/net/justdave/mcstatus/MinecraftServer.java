@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -104,7 +105,7 @@ public class MinecraftServer {
 		while (pos < sample.length()) {
 			JSONObject entry = sample.optJSONObject(pos++);
 			String username = entry.optString("name");
-			result.add(minecraftToHtml(username, false));
+			result.add(minecraftToHtml(username));
 		}
 		Log.i(TAG, "playerList() returning ".concat(result.toString()));
 		return result;
@@ -115,210 +116,173 @@ public class MinecraftServer {
 		if (version == null) {
 			return "";
 		}
-		return minecraftToHtml(version.optString("name"), false);
+		return minecraftToHtml(version.optString("name"));
 	}
 
-	public String description() {
-		StringBuilder result = new StringBuilder();
-		JSONArray descExtra = null;
-		String desc = serverJSON.optString("description");
-		Log.i(TAG, "desc = " + desc);
-		JSONObject descriptionObj = serverJSON.optJSONObject("description");
-		if (descriptionObj != null) {
-			desc = descriptionObj.optString("text");
-			descExtra = descriptionObj.optJSONArray("extra");
-        }
-		Log.i(TAG, "desc = " + desc);
-		result.append("<body style=\"background-color: transparent; color: white; margin: 0; padding: 0;\">");
-		int curChar = 0;
-		if (descExtra != null) {
-			// [{"text":"Welcome","italic":true},{"text":" to","bold":true},{"text":" "},{"text":"Minecraft","strikethrough":true,"underlined":true,"obfuscated":true}]
-			while (curChar < descExtra.length()) {
-				JSONObject chunk = null;
-				try {
-					chunk = descExtra.getJSONObject(curChar++);
-				} catch (JSONException e) {
-					// Log.i(TAG, e.getMessage());
-				}
-				if (chunk != null){
-					result.append("<span style=\"");
-					try {
-						String color = chunk.getString("color");
-						result.append("color: ").append(color).append("; ");
-					} catch (JSONException e) {
-						// Log.i(TAG, e.getMessage());
-					}
-					try {
-						if(chunk.getBoolean("bold")) {
-							result.append("font-weight: bold; ");
-						}
-					} catch (JSONException e) {
-						// Log.i(TAG, e.getMessage());
-					}
-					try {
-						if(chunk.getBoolean("strikethrough")) {
-							result.append("text-decoration: line-through; ");
-						}
-					} catch (JSONException e) {
-						// Log.i(TAG, e.getMessage());
-					}
-					try {
-						if(chunk.getBoolean("underlined")) {
-							result.append("text-decoration: underscore; ");
-						}
-					} catch (JSONException e) {
-						// Log.i(TAG, e.getMessage());
-					}
-					try {
-						if(chunk.getBoolean("italic")) {
-							result.append("font-style: italic; ");
-						}
-					} catch (JSONException e) {
-						// Log.i(TAG, e.getMessage());
-					}
-
-					result.append("\">");
-					try {
-						String text = chunk.getString("text");
-						result.append(text);
-					} catch (JSONException e) {
-						// Log.i(TAG, e.getMessage());
-					}
-					result.append("</span>");
-				}
-			}
-		} else {
-			result.append(minecraftToHtml(desc, true));
-		}
-		result.append("</body>");
-		return result.toString();
-	}
-
-	String minecraftToHtml(String text, boolean forWebView) {
-		StringBuilder result = new StringBuilder();
-		int curChar = 0;
+	private static class Style {
 		String color = "";
 		boolean bold = false;
 		boolean italic = false;
 		boolean strikethrough = false;
 		boolean underlined = false;
-		boolean stylesChanged = false;
-		boolean openSpan = false;
 
-		if (forWebView) {
-			result.append("<span>");
-			openSpan = true;
+		Style copy() {
+			Style copy = new Style();
+			copy.color = this.color;
+			copy.bold = this.bold;
+			copy.italic = this.italic;
+			copy.strikethrough = this.strikethrough;
+			copy.underlined = this.underlined;
+			return copy;
 		}
+
+		static String colorToHex(String color) {
+			if (color == null || color.isEmpty()) return "";
+			if (color.startsWith("#")) return color;
+			switch (color.toLowerCase()) {
+				case "black": return "#000000";
+				case "dark_blue": return "#0000aa";
+				case "dark_green": return "#00aa00";
+				case "dark_aqua": return "#00aaaa";
+				case "dark_red": return "#aa0000";
+				case "dark_purple": return "#aa00aa";
+				case "gold": return "#ffaa00";
+				case "gray": return "#aaaaaa";
+				case "dark_gray": return "#555555";
+				case "blue": return "#5555ff";
+				case "green": return "#55ff55";
+				case "aqua": return "#55ffff";
+				case "red": return "#ff5555";
+				case "light_purple": return "#ff55ff";
+				case "yellow": return "#ffff55";
+				case "white": return "#ffffff";
+				default: return "";
+			}
+		}
+	}
+
+	public String description() {
+		Object description = serverJSON.opt("description");
+		if (description != null) {
+			return parseComponent(description, new Style());
+		}
+		return "";
+	}
+
+	private String parseComponent(Object component, Style inheritedStyle) {
+		StringBuilder result = new StringBuilder();
+		Style currentStyle = inheritedStyle.copy();
+
+		if (component instanceof String) {
+			result.append(minecraftToHtml((String) component, currentStyle));
+		} else if (component instanceof JSONObject) {
+			JSONObject obj = (JSONObject) component;
+			if (obj.has("color")) currentStyle.color = Style.colorToHex(obj.optString("color"));
+			if (obj.has("bold")) currentStyle.bold = obj.optBoolean("bold");
+			if (obj.has("italic")) currentStyle.italic = obj.optBoolean("italic");
+			if (obj.has("underlined")) currentStyle.underlined = obj.optBoolean("underlined");
+			if (obj.has("strikethrough")) currentStyle.strikethrough = obj.optBoolean("strikethrough");
+
+			String text = obj.optString("text");
+			if (!text.isEmpty()) {
+				result.append(minecraftToHtml(text, currentStyle));
+			}
+
+			JSONArray extra = obj.optJSONArray("extra");
+			if (extra != null) {
+				for (int i = 0; i < extra.length(); i++) {
+					Object extraComponent = extra.opt(i);
+					if (extraComponent != null) {
+						result.append(parseComponent(extraComponent, currentStyle));
+					}
+				}
+			}
+		} else if (component instanceof JSONArray) {
+			JSONArray array = (JSONArray) component;
+			for (int i = 0; i < array.length(); i++) {
+				Object entry = array.opt(i);
+				if (entry != null) {
+					result.append(parseComponent(entry, currentStyle));
+				}
+			}
+		}
+
+		return result.toString();
+	}
+
+	String minecraftToHtml(String text, Style baseStyle) {
+		StringBuilder result = new StringBuilder();
+		int curChar = 0;
+		Style currentStyle = baseStyle.copy();
+		boolean stylesChanged = true;
+		boolean isAtStartOfLine = true;
+
 		while (curChar < text.length()) {
 			char theChar = text.charAt(curChar++);
 			if (theChar == '§' && curChar < text.length()) {
 				char code = text.charAt(curChar++);
 				switch (code) {
-					case '0':
-						color = "#000000";
-						break;
-					case '1':
-						color = "#0000aa";
-						break;
-					case '2':
-						color = "#00aa00";
-						break;
-					case '3':
-						color = "#00aaaa";
-						break;
-					case '4':
-						color = "#aa0000";
-						break;
-					case '5':
-						color = "#aa00aa";
-						break;
-					case '6':
-						color = "#ffaa00";
-						break;
-					case '7':
-						color = "#aaaaaa";
-						break;
-					case '8':
-						color = "#555555";
-						break;
-					case '9':
-						color = "#5555ff";
-						break;
-					case 'a':
-						color = "#55ff55";
-						break;
-					case 'b':
-						color = "#55ffff";
-						break;
-					case 'c':
-						color = "#ff5555";
-						break;
-					case 'd':
-						color = "#ff55ff";
-						break;
-					case 'e':
-						color = "#ffff55";
-						break;
-					case 'f':
-						color = "#ffffff";
-						break;
-					case 'k':
-						// obfuscated - not supported easily, skip
-						break;
-					case 'l':
-						bold = true;
-						break;
-					case 'm':
-						strikethrough = true;
-						break;
-					case 'n':
-						underlined = true;
-						break;
-					case 'o':
-						italic = true;
-						break;
+					case '0': currentStyle.color = "#000000"; break;
+					case '1': currentStyle.color = "#0000aa"; break;
+					case '2': currentStyle.color = "#00aa00"; break;
+					case '3': currentStyle.color = "#00aaaa"; break;
+					case '4': currentStyle.color = "#aa0000"; break;
+					case '5': currentStyle.color = "#aa00aa"; break;
+					case '6': currentStyle.color = "#ffaa00"; break;
+					case '7': currentStyle.color = "#aaaaaa"; break;
+					case '8': currentStyle.color = "#555555"; break;
+					case '9': currentStyle.color = "#5555ff"; break;
+					case 'a': currentStyle.color = "#55ff55"; break;
+					case 'b': currentStyle.color = "#55ffff"; break;
+					case 'c': currentStyle.color = "#ff5555"; break;
+					case 'd': currentStyle.color = "#ff55ff"; break;
+					case 'e': currentStyle.color = "#ffff55"; break;
+					case 'f': currentStyle.color = "#ffffff"; break;
+					case 'l': currentStyle.bold = true; break;
+					case 'm': currentStyle.strikethrough = true; break;
+					case 'n': currentStyle.underlined = true; break;
+					case 'o': currentStyle.italic = true; break;
 					case 'r':
-						bold = false;
-						italic = false;
-						strikethrough = false;
-						underlined = false;
-						color = "";
+						currentStyle = baseStyle.copy();
 						break;
 				}
 				stylesChanged = true;
+			} else if (theChar == '\n') {
+				result.append("</font></b></i></u></strike><br>");
+				stylesChanged = true;
+				isAtStartOfLine = true;
 			} else {
 				if (stylesChanged) {
-					if (forWebView) {
-						if (openSpan) result.append("</span>");
-						result.append("<span style=\"");
-						if (!color.isEmpty()) result.append("color: ").append(color).append("; ");
-						if (bold) result.append("font-weight: bold; ");
-						if (strikethrough) result.append("text-decoration: line-through; ");
-						if (underlined) result.append("text-decoration: underline; ");
-						if (italic) result.append("font-style: italic; ");
-						result.append("\">");
-						openSpan = true;
-					} else {
-						result.append("</font></b></i></u>");
-						result.append("<font");
-						if (!color.isEmpty()) result.append(" color=\"").append(color).append("\"");
-						result.append(">");
-						if (bold) result.append("<b>");
-						if (italic) result.append("<i>");
-						if (underlined) result.append("<u>");
-					}
+					result.append("</font></b></i></u></strike>");
+					result.append("<font");
+					if (!currentStyle.color.isEmpty()) result.append(" color=\"").append(currentStyle.color).append("\"");
+					result.append(">");
+					if (currentStyle.bold) result.append("<b>");
+					if (currentStyle.italic) result.append("<i>");
+					if (currentStyle.underlined) result.append("<u>");
+					if (currentStyle.strikethrough) result.append("<strike>");
 					stylesChanged = false;
 				}
-				result.append(theChar);
+				if (theChar == ' ') {
+					if (isAtStartOfLine) {
+						result.append("&nbsp;");
+					} else {
+						result.append(' ');
+					}
+				} else {
+					result.append(theChar);
+					isAtStartOfLine = false;
+				}
 			}
 		}
-		if (forWebView) {
-			if (openSpan) result.append("</span>");
-		} else {
-			result.append("</font></b></i></u>");
-		}
+		result.append("</font></b></i></u></strike>");
 		return result.toString();
 	}
+
+	String minecraftToHtml(String text) {
+		return minecraftToHtml(text, new Style());
+	}
+
 
 	public Bitmap image() {
 		String imageData = serverJSON.optString("favicon");
@@ -334,95 +298,79 @@ public class MinecraftServer {
 
 	public void query() {
 		Log.i(TAG, "query() called on ".concat(serverAddress()));
-		Socket socket;
-		try {
-			socket = new Socket(serverAddress, queryPort);
+		try (Socket socket = new Socket()) {
+			socket.connect(new InetSocketAddress(serverAddress, queryPort), 10000);
 			socket.setSoTimeout(10000); // 10 second read timeout
+
+			// See http://wiki.vg/Protocol (Status Ping)
+			try (OutputStream out = socket.getOutputStream();
+				 InputStream in = socket.getInputStream()) {
+				out.write(6 + serverAddress.length()); // length of packet ID + data to follow
+				out.write(0); // packet ID = 0
+				out.write(4); // Protocol version
+				out.write(serverAddress.length()); // varint length of server address
+				out.write(serverAddress.getBytes()); // server address in UTF8
+				out.write((queryPort & 0xFF00) >> 8); // port number high byte
+				out.write(queryPort & 0x00FF); // port number low byte
+				out.write(1); // Next state: status
+				out.write(0x01); // status ping (1st byte)
+				out.write(0x00); // status ping (2nd byte)
+
+				int packetLength = readVarInt(in); // size of entire packet
+				if (packetLength < 11) {
+					Log.i(TAG, String.format("%s, %s: packet length too small: %d", serverName, serverAddress, packetLength));
+					setDescription("Invalid response from server (server may be in the process of restarting, try again in a few seconds)");
+					return;
+				}
+				final int packetType = in.read(); // packet type - going to ignore it
+				Log.d(TAG, String.format("%s, %s: packet type: %d", serverName, serverAddress, packetType));
+				int jsonLength = readVarInt(in); // size of JSON blob
+				if (jsonLength < 0) {
+					return;
+				}
+				byte[] buffer = new byte[jsonLength];
+				int totalBytesRead = 0;
+				while (totalBytesRead < jsonLength) {
+					int bytesRead = in.read(buffer, totalBytesRead, jsonLength - totalBytesRead);
+					if (bytesRead == -1) {
+						throw new IOException("Unexpected end of stream");
+					}
+					totalBytesRead += bytesRead;
+				}
+				String serverData = new String(buffer, 0, totalBytesRead);
+				serverJSON = new JSONObject(serverData);
+				Log.i(TAG, "ServerJSON = " + serverJSON);
+			}
 		} catch (UnknownHostException e) {
 			setDescription("Error: Lookup failed: Unknown host");
-			return;
-		} catch (IllegalArgumentException | IOException e) {
+		} catch (IllegalArgumentException | IOException | JSONException e) {
 			setDescription("Server is offline or Query is disabled");
-			//setDescription("Error: " + e.getLocalizedMessage());
-			return;
+			Log.e(TAG, "Exception during query: " + e.getMessage());
 		}
-		// See http://wiki.vg/Protocol (Status Ping)
-		OutputStream out;
-		InputStream in;
-		try {
-			out = socket.getOutputStream();
-			in = socket.getInputStream();
-			out.write(6 + serverAddress.length()); // length of packet ID + data
-													// to follow
-			out.write(0); // packet ID = 0
-			out.write(4); // Protocol version
-			out.write(serverAddress.length()); // varint length of server
-												// address
-			out.write(serverAddress.getBytes()); // server address in UTF8
-			out.write((queryPort & 0xFF00) >> 8); // port number high byte
-			out.write(queryPort & 0x00FF); // port number low byte
-			out.write(1); // Next state: status
-			out.write(0x01); // status ping (1st byte)
-			out.write(0x00); // status ping (2nd byte)
+	}
 
-			int packetLength = readVarInt(in); // size of entire packet
-			String serverData;
-			if (packetLength < 11) {
-				Log.i(TAG, String.format("%s, %s: packet length too small: %d", serverName, serverAddress, packetLength));
-				setDescription("Invalid response from server (server may be in the process of restarting, try again in a few seconds)");
-				in.close();
-				out.close();
-				socket.close();
-				return;
-			}
-			final int packetType = in.read(); // packet type - going to ignore it because we should
-											  // only ever get the one type back anyway
-			Log.d(TAG, String.format("%s, %s: packet type: %d", serverName, serverAddress, packetType));
-			int jsonLength = readVarInt(in); // size of JSON blob
-			if (jsonLength < 0){
-				in.close();
-				out.close();
-				socket.close();
-				return;
-			}
-			byte[] buffer = new byte[jsonLength + 10]; // a little more than
-														// we're expecting just
-														// to be safe
-			int bytesRead = 0;
-			do {
-				bytesRead += in.read(buffer, bytesRead, jsonLength - bytesRead);
-			} while (bytesRead < jsonLength);
-			serverData = new String(buffer, 0, bytesRead);
-			serverJSON = new JSONObject(serverData);
-			Log.i(TAG, "ServerJSON = " + serverJSON);
-			in.close();
-			out.close();
-			socket.close();
-		} catch (JSONException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	void setServerJSON(JSONObject json) {
+		this.serverJSON = json;
 	}
 
 	private int readVarInt(InputStream in) {
 		int theInt = 0;
-//		int byteCounter = 0;
 
 		for (int i = 0; i < 6; i++){
 			int theByte;
 			try {
 				theByte = in.read();
+				if (theByte == -1) {
+					Log.w(TAG, "readVarInt: Unexpected end of stream");
+					return -1;
+				}
 			} catch (IOException e){
 				e.printStackTrace();
 				Log.w(TAG, "readVarInt: Failed to retrieve data from server");
-				return 0;
+				return -1;
 			}
 
 			theInt |= (theByte & 0x7F) << (7 * i);
-			if (theByte == 0xffffffff){
-				Log.w(TAG, String.format("readVarInt: received unexpected byte value: %#x", theByte));
-				return -1;
-			}
 			if ((theByte & 0x80) != 128) {
 				break;
 			}

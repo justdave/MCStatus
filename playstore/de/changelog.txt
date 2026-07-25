@@ -1,4 +1,7 @@
 <version name="1.0.12">
+* Fehlgeschlagene Netzwerkanfragen führen nicht mehr dazu, dass das Aktualisierungssymbol endlos dreht.
+* Formatierter Text wird nun in allen Serverfeldern verarbeitet, nicht mehr nur in der Beschreibung.
+* Massive Verbesserungen an der Textformatierung.
 * Ziel API 37 (Android 17)
 </version>
 <version name="1.0.11">

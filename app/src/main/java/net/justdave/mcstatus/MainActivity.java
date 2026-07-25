@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.Html.ImageGetter;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -26,6 +25,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 
 import net.justdave.mcstatus.db.ServerDB;
 import net.justdave.mcstatus.dialogs.AboutDialog;
@@ -49,11 +51,13 @@ public class MainActivity extends Activity {
         Log.i(TAG, "Drawable source: " + source);
         @SuppressLint("DiscouragedApi") int rid = getResources().getIdentifier(source, null, null);
         if (rid > 0) {
-            drawable = getResources().getDrawable(rid);
+            drawable = ContextCompat.getDrawable(this, rid);
         } else {
-            drawable = getResources().getDrawable(android.R.drawable.stat_notify_error);
+            drawable = ContextCompat.getDrawable(this, android.R.drawable.stat_notify_error);
         }
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        if (drawable != null) {
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        }
         return drawable;
     };
     private ServerListViewAdapter adapter;
@@ -85,16 +89,16 @@ public class MainActivity extends Activity {
         Log.i(TAG, "helpView: " + helpView);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             /* Nugat and up can actually process images! */
-            helpView.setText(Html.fromHtml(readRawTextFile(R.raw.main_help), 0, imgGetter, null));
+            helpView.setText(HtmlCompat.fromHtml(readRawTextFile(R.raw.main_help), HtmlCompat.FROM_HTML_MODE_LEGACY, imgGetter, null));
         } else {
             /* below Nugat requires one hell of a hack of a workaround. */
             String text = readRawTextFile(R.raw.main_help);
             SpannableStringBuilder ssb = new SpannableStringBuilder();
             int index = text.indexOf("<img") -1;
             int index2 = text.indexOf("\">") + 2;
-            SpannableString string1 = new SpannableString(Html.fromHtml(text.substring(0,index)));
+            SpannableString string1 = new SpannableString(HtmlCompat.fromHtml(text.substring(0,index), HtmlCompat.FROM_HTML_MODE_LEGACY));
             ImageSpan is = new ImageSpan(getApplicationContext(), android.R.drawable.ic_menu_add);
-            SpannableString string2 = new SpannableString(Html.fromHtml(text.substring(index2)));
+            SpannableString string2 = new SpannableString(HtmlCompat.fromHtml(text.substring(index2), HtmlCompat.FROM_HTML_MODE_LEGACY));
             ssb.append(string1).append(" ");
             ssb.setSpan(is, ssb.length()-1, ssb.length(), 0);
             ssb.append(string2);
@@ -131,9 +135,10 @@ public class MainActivity extends Activity {
                                 MainActivity.this,
                                 android.R.style.Theme_DeviceDefault_Dialog_Alert);
                     } else {
+                        @SuppressWarnings("deprecation")
+                        int theme = AlertDialog.THEME_DEVICE_DEFAULT_DARK;
                         alertDialogBuilder = new AlertDialog.Builder(
-                                MainActivity.this,
-                                AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                                MainActivity.this, theme);
                     }
                     alertDialogBuilder.setView(promptsView);
 
@@ -177,9 +182,10 @@ public class MainActivity extends Activity {
                                 MainActivity.this,
                                 android.R.style.Theme_DeviceDefault_Dialog_Alert);
                     } else {
+                        @SuppressWarnings("deprecation")
+                        int theme = AlertDialog.THEME_DEVICE_DEFAULT_DARK;
                         myAlertDialog = new AlertDialog.Builder(
-                                MainActivity.this,
-                                AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                                MainActivity.this, theme);
                     }
                     myAlertDialog
                             .setCancelable(false)
@@ -237,22 +243,23 @@ public class MainActivity extends Activity {
     }
 
     public void refresh() {
-        ImageView iv = (ImageView) View.inflate(getApplicationContext(), R.layout.refresh_animation,
+        ImageView iv = (ImageView) View.inflate(this, R.layout.refresh_animation,
                 null);
 
         Animation rotation = AnimationUtils.loadAnimation(
-                getApplicationContext(), R.anim.refresh_rotate);
+                this, R.anim.refresh_rotate);
         rotation.setRepeatCount(Animation.INFINITE);
 
         ListIterator<MinecraftServer> iterator = serverlist.listIterator();
         if (iterator.hasNext()) {
             if (refreshItem != null) {
                 refreshItem.setActionView(iv);
+                refreshItem.setIcon(null);
             }
             iv.startAnimation(rotation);
         }
         while (iterator.hasNext()) {
-            iterator.next().setDescription("Loading...           ");
+            iterator.next().setDescription("Loading...");
         }
         adapter.notifyDataSetChanged();
         iterator = serverlist.listIterator();
@@ -262,21 +269,26 @@ public class MainActivity extends Activity {
                 synchronized (refreshLock) {
                     currentlyRefreshing++;
                 }
-                mcs.query();
-                runOnUiThread(() -> {
-                    adapter.notifyDataSetChanged();
-                    synchronized (refreshLock) {
-                        currentlyRefreshing--;
-                    }
-                    if (currentlyRefreshing == 0) {
-                        if (refreshItem != null
-                                && refreshItem.getActionView() != null) {
-                            refreshItem.getActionView()
-                                    .clearAnimation();
-                            refreshItem.setActionView(null);
+                try {
+                    mcs.query();
+                } finally {
+                    runOnUiThread(() -> {
+                        adapter.notifyDataSetChanged();
+                        synchronized (refreshLock) {
+                            currentlyRefreshing--;
                         }
-                    }
-                });
+                        if (currentlyRefreshing == 0) {
+                            if (refreshItem != null) {
+                                if (refreshItem.getActionView() != null) {
+                                    refreshItem.getActionView()
+                                            .clearAnimation();
+                                    refreshItem.setActionView(null);
+                                }
+                                refreshItem.setIcon(android.R.drawable.ic_popup_sync);
+                            }
+                        }
+                    });
+                }
             });
             thread.start();
         }
@@ -320,8 +332,10 @@ public class MainActivity extends Activity {
                 alertDialogBuilder = new AlertDialog.Builder(
                         this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
             } else {
+                @SuppressWarnings("deprecation")
+                int theme = AlertDialog.THEME_DEVICE_DEFAULT_DARK;
                 alertDialogBuilder = new AlertDialog.Builder(
-                        this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+                        this, theme);
             }
             alertDialogBuilder.setView(promptsView);
 
